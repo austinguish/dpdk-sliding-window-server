@@ -1,0 +1,9 @@
+/users/jiangyw/Server/build/CMakeFiles/install/strip.dir
+/users/jiangyw/Server/build/CMakeFiles/install/local.dir
+/users/jiangyw/Server/build/CMakeFiles/edit_cache.dir
+/users/jiangyw/Server/build/CMakeFiles/static.dir
+/users/jiangyw/Server/build/CMakeFiles/lab1-server-static.dir
+/users/jiangyw/Server/build/CMakeFiles/install.dir
+/users/jiangyw/Server/build/CMakeFiles/list_install_components.dir
+/users/jiangyw/Server/build/CMakeFiles/rebuild_cache.dir
+/users/jiangyw/Server/build/CMakeFiles/lab1-server-shared.dir

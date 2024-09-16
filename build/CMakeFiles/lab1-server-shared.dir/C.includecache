@@ -1,0 +1,30 @@
+#IncludeRegexLine: ^[ 	]*[#%][ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+/users/jiangyw/Server/lab1-server.c
+stdint.h
+-
+stdlib.h
+-
+stdbool.h
+-
+stdio.h
+-
+inttypes.h
+-
+rte_eal.h
+-
+rte_ethdev.h
+-
+rte_cycles.h
+-
+rte_lcore.h
+-
+rte_mbuf.h
+-
+
