@@ -21,7 +21,7 @@
 #define BURST_SIZE 32
 #define MAX_FLOW_NUM 100
 #define PORT_NUM 5001
-
+#include "udp_header.h"
 struct rte_mempool *mbuf_pool = NULL;
 static struct rte_ether_addr my_eth;
 size_t window_len = 10;
@@ -192,17 +192,18 @@ static int get_port(struct sockaddr_in *src,
     dst->sin_addr.s_addr = ipv4_dst_addr;
 
     // check udp header
-    struct rte_udp_hdr *const udp_hdr = (struct rte_udp_hdr *)(p);
-    p += sizeof(*udp_hdr);
-    header += sizeof(*udp_hdr);
+
+    struct udp_header_extra *const udp_hdr_ext = (struct udp_header_extra *)(p);
+    p += sizeof(*udp_hdr_ext);
+    header += sizeof(*udp_hdr_ext);
 
     // In network byte order.
-    in_port_t udp_src_port = udp_hdr->src_port;
-    in_port_t udp_dst_port = udp_hdr->dst_port;
+    in_port_t udp_src_port = udp_hdr_ext->udp_hdr.src_port;
+    in_port_t udp_dst_port =udp_hdr_ext->udp_hdr.dst_port;
 
-    int ret = rte_be_to_cpu_16(udp_hdr->dst_port) - PORT_NUM;
+    int ret = rte_be_to_cpu_16(udp_hdr_ext->udp_hdr.dst_port) - PORT_NUM;
     if (ret < 0 || ret >= MAX_FLOW_NUM) {
-        printf("Bad port number %d\n", rte_be_to_cpu_16(udp_hdr->dst_port));
+        printf("Bad port number %d\n", rte_be_to_cpu_16(udp_hdr_ext->udp_hdr.dst_port));
         return -4;
     }
 
@@ -252,7 +253,7 @@ lcore_main(void) {
             struct rte_mbuf *pkt;
             struct rte_ether_hdr *eth_h;
             struct rte_ipv4_hdr *ip_h;
-            struct rte_udp_hdr *udp_h;
+            struct udp_header_extra *udp_h;
             struct rte_ether_addr eth_addr;
             uint32_t ip_addr;
             uint8_t i;
@@ -289,8 +290,8 @@ lcore_main(void) {
                 ip_h = rte_pktmbuf_mtod_offset(pkt, struct rte_ipv4_hdr *,
                                                sizeof(struct rte_ether_hdr));
 
-                udp_h = rte_pktmbuf_mtod_offset(pkt, struct rte_udp_hdr *,
-                                                sizeof(struct rte_ether_hdr) + sizeof(struct rte_ipv4_hdr));
+                udp_h = rte_pktmbuf_mtod_offset(pkt, struct udp_header_extra *,
+                                                sizeof(struct udp_header_extra) + sizeof(struct rte_ipv4_hdr));
                 // rte_pktmbuf_dump(stdout, pkt, pkt->pkt_len);
                 rec++;
 
@@ -329,11 +330,11 @@ lcore_main(void) {
                 header_size += sizeof(*ip_h_ack);
                 ptr += sizeof(*ip_h_ack);
                 /* add in UDP hdr*/
-                udp_h_ack = (struct rte_udp_hdr *)ptr;
-                udp_h_ack->src_port = udp_h->dst_port;
-                udp_h_ack->dst_port = udp_h->src_port;
-                udp_h_ack->dgram_len = rte_cpu_to_be_16(sizeof(struct rte_udp_hdr) + ack_len);
-
+                struct udp_header_extra * udp_h_ack_ext = (struct udp_header_extra *)ptr;
+                udp_h_ack_ext->udp_hdr.src_port = udp_h->udp_hdr.dst_port;
+                udp_h_ack_ext->udp_hdr.dst_port = udp_h->udp_hdr.src_port;
+                udp_h_ack_ext->udp_hdr.dgram_len = rte_cpu_to_be_16(sizeof(struct udp_header_extra) + ack_len);
+                printf("received window size is %d",udp_h->window_size);
                 uint16_t udp_cksum = rte_ipv4_udptcp_cksum(ip_h_ack, (void *)udp_h_ack);
 
                 // printf("Udp checksum is %u\n", (unsigned)udp_cksum);

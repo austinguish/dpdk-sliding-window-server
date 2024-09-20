@@ -16,7 +16,8 @@ if(NOT DPDK_FOUND)
 endif()
 
 # Add executable targets
-add_executable(${APP_NAME}-shared ${SOURCES})
+add_executable(${APP_NAME}-shared ${SOURCES}
+        udp_header.h)
 add_executable(${APP_NAME}-static ${SOURCES})
 
 # Set compile options
