@@ -317,7 +317,7 @@ lcore_main(void) {
                 ip_h_ack = (struct rte_ipv4_hdr *)ptr;
                 ip_h_ack->version_ihl = 0x45;
                 ip_h_ack->type_of_service = 0x0;
-                ip_h_ack->total_length = rte_cpu_to_be_16(sizeof(struct rte_ipv4_hdr) + sizeof(struct rte_udp_hdr) + ack_len);
+                ip_h_ack->total_length = rte_cpu_to_be_16(sizeof(struct rte_ipv4_hdr) + sizeof(struct udp_header_extra) + ack_len);
                 ip_h_ack->packet_id = rte_cpu_to_be_16(1);
                 ip_h_ack->fragment_offset = 0;
                 ip_h_ack->time_to_live = 64;
@@ -334,7 +334,7 @@ lcore_main(void) {
                 udp_h_ack = &udp_h_ack_ext->udp_hdr;
                 udp_h_ack->src_port = udp_h->dst_port;
                 udp_h_ack->dst_port = udp_h->src_port;
-                udp_h_ack->dgram_len = rte_cpu_to_be_16(sizeof(struct rte_udp_hdr) + ack_len);
+                udp_h_ack->dgram_len = rte_cpu_to_be_16(sizeof(struct udp_header_extra) + ack_len);
                 printf("received window size is %d",udp_h->window_size);
                 uint16_t udp_cksum = rte_ipv4_udptcp_cksum(ip_h_ack, (void *)udp_h_ack);
 
