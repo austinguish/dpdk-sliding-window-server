@@ -332,10 +332,10 @@ lcore_main(void) {
                 /* add in UDP hdr*/
                 struct udp_header_extra * udp_h_ack_ext = (struct udp_header_extra *)ptr;
                 udp_h_ack = &udp_h_ack_ext->udp_hdr;
-                udp_h_ack->src_port = udp_h->dst_port;
-                udp_h_ack->dst_port = udp_h->src_port;
+                udp_h_ack->src_port = udp_h->udp_hdr.dst_port;
+                udp_h_ack->dst_port = udp_h->udp_hdr.src_port;
                 udp_h_ack->dgram_len = rte_cpu_to_be_16(sizeof(struct udp_header_extra) + ack_len);
-                printf("received window size is %d",udp_h->window_size);
+                printf("received window size is %d\n",udp_h->window_size);
                 uint16_t udp_cksum = rte_ipv4_udptcp_cksum(ip_h_ack, (void *)udp_h_ack);
 
                 // printf("Udp checksum is %u\n", (unsigned)udp_cksum);

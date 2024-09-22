@@ -55,7 +55,7 @@
 				}
 			],
 			"type" : "INTERNAL",
-			"value" : "/users/jiangyw/Server/cmake-build-debug"
+			"value" : "/mydata/Server/cmake-build-debug"
 		},
 		{
 			"name" : "CMAKE_CACHE_MAJOR_VERSION",
@@ -79,7 +79,7 @@
 				}
 			],
 			"type" : "INTERNAL",
-			"value" : "30"
+			"value" : "29"
 		},
 		{
 			"name" : "CMAKE_CACHE_PATCH_VERSION",
@@ -91,7 +91,7 @@
 				}
 			],
 			"type" : "INTERNAL",
-			"value" : "3"
+			"value" : "6"
 		},
 		{
 			"name" : "CMAKE_COLOR_DIAGNOSTICS",
@@ -106,6 +106,22 @@
 			"value" : "ON"
 		},
 		{
+			"name" : "CMAKE_COLOR_MAKEFILE",
+			"properties" : 
+			[
+				{
+					"name" : "ADVANCED",
+					"value" : "1"
+				},
+				{
+					"name" : "HELPSTRING",
+					"value" : ""
+				}
+			],
+			"type" : "UNINITIALIZED",
+			"value" : ""
+		},
+		{
 			"name" : "CMAKE_COMMAND",
 			"properties" : 
 			[
@@ -115,7 +131,7 @@
 				}
 			],
 			"type" : "INTERNAL",
-			"value" : "/users/jiangyw/.cache/JetBrains/RemoteDev/dist/a7332f4099b99_CLion-243.12818.61/bin/cmake/linux/x64/bin/cmake"
+			"value" : "/users/jiangyw/.cache/JetBrains/RemoteDev/dist/1729cdbf0ed8b_CLion-2024.2.2/bin/cmake/linux/x64/bin/cmake"
 		},
 		{
 			"name" : "CMAKE_CPACK_COMMAND",
@@ -127,7 +143,7 @@
 				}
 			],
 			"type" : "INTERNAL",
-			"value" : "/users/jiangyw/.cache/JetBrains/RemoteDev/dist/a7332f4099b99_CLion-243.12818.61/bin/cmake/linux/x64/bin/cpack"
+			"value" : "/users/jiangyw/.cache/JetBrains/RemoteDev/dist/1729cdbf0ed8b_CLion-2024.2.2/bin/cmake/linux/x64/bin/cpack"
 		},
 		{
 			"name" : "CMAKE_CTEST_COMMAND",
@@ -139,7 +155,7 @@
 				}
 			],
 			"type" : "INTERNAL",
-			"value" : "/users/jiangyw/.cache/JetBrains/RemoteDev/dist/a7332f4099b99_CLion-243.12818.61/bin/cmake/linux/x64/bin/ctest"
+			"value" : "/users/jiangyw/.cache/JetBrains/RemoteDev/dist/1729cdbf0ed8b_CLion-2024.2.2/bin/cmake/linux/x64/bin/ctest"
 		},
 		{
 			"name" : "CMAKE_C_COMPILER",
@@ -415,7 +431,7 @@
 				}
 			],
 			"type" : "STATIC",
-			"value" : "/users/jiangyw/Server/cmake-build-debug/CMakeFiles/pkgRedirects"
+			"value" : "/mydata/Server/cmake-build-debug/CMakeFiles/pkgRedirects"
 		},
 		{
 			"name" : "CMAKE_GENERATOR",
@@ -427,7 +443,7 @@
 				}
 			],
 			"type" : "INTERNAL",
-			"value" : "Ninja"
+			"value" : "Unix Makefiles"
 		},
 		{
 			"name" : "CMAKE_GENERATOR_INSTANCE",
@@ -475,7 +491,7 @@
 				}
 			],
 			"type" : "INTERNAL",
-			"value" : "/users/jiangyw/Server"
+			"value" : "/mydata/Server"
 		},
 		{
 			"name" : "CMAKE_INSTALL_PREFIX",
@@ -522,12 +538,16 @@
 			"properties" : 
 			[
 				{
+					"name" : "ADVANCED",
+					"value" : "1"
+				},
+				{
 					"name" : "HELPSTRING",
-					"value" : "No help, variable specified on the command line."
+					"value" : "Path to a program."
 				}
 			],
-			"type" : "UNINITIALIZED",
-			"value" : "/users/jiangyw/.cache/JetBrains/RemoteDev/dist/a7332f4099b99_CLion-243.12818.61/bin/ninja/linux/x64/ninja"
+			"type" : "FILEPATH",
+			"value" : "/usr/bin/make"
 		},
 		{
 			"name" : "CMAKE_MODULE_LINKER_FLAGS",
@@ -759,7 +779,7 @@
 				}
 			],
 			"type" : "INTERNAL",
-			"value" : "/users/jiangyw/.cache/JetBrains/RemoteDev/dist/a7332f4099b99_CLion-243.12818.61/bin/cmake/linux/x64/share/cmake-3.30"
+			"value" : "/users/jiangyw/.cache/JetBrains/RemoteDev/dist/1729cdbf0ed8b_CLion-2024.2.2/bin/cmake/linux/x64/share/cmake-3.29"
 		},
 		{
 			"name" : "CMAKE_SHARED_LINKER_FLAGS",
@@ -1523,7 +1543,7 @@
 				}
 			],
 			"type" : "STATIC",
-			"value" : "/users/jiangyw/Server/cmake-build-debug"
+			"value" : "/mydata/Server/cmake-build-debug"
 		},
 		{
 			"name" : "lab1-server_IS_TOP_LEVEL",
@@ -1547,7 +1567,7 @@
 				}
 			],
 			"type" : "STATIC",
-			"value" : "/users/jiangyw/Server"
+			"value" : "/mydata/Server"
 		},
 		{
 			"name" : "pkgcfg_lib_DPDK_rte_acl",

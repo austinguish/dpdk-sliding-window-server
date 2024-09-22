@@ -1,0 +1,2 @@
+# Hashes of file build rules.
+44ff0b4687448cfd9905cdeaf9f8863e CMakeFiles/static
