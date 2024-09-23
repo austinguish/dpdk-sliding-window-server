@@ -53,10 +53,10 @@ RM = /users/jiangyw/.cache/JetBrains/RemoteDev/dist/1729cdbf0ed8b_CLion-2024.2.2
 EQUALS = =
 
 # The top-level source directory on which CMake was run.
-CMAKE_SOURCE_DIR = /mydata/Server
+CMAKE_SOURCE_DIR = /users/jiangyw/Server
 
 # The top-level build directory on which CMake was run.
-CMAKE_BINARY_DIR = /mydata/Server/cmake-build-debug
+CMAKE_BINARY_DIR = /users/jiangyw/Server/cmake-build-debug
 
 # Utility rule file for static.
 
@@ -67,7 +67,7 @@ include CMakeFiles/static.dir/compiler_depend.make
 include CMakeFiles/static.dir/progress.make
 
 CMakeFiles/static: lab1-server-static
-	/users/jiangyw/.cache/JetBrains/RemoteDev/dist/1729cdbf0ed8b_CLion-2024.2.2/bin/cmake/linux/x64/bin/cmake -E create_symlink lab1-server-static /mydata/Server/cmake-build-debug/lab1-server
+	/users/jiangyw/.cache/JetBrains/RemoteDev/dist/1729cdbf0ed8b_CLion-2024.2.2/bin/cmake/linux/x64/bin/cmake -E create_symlink lab1-server-static /users/jiangyw/Server/cmake-build-debug/lab1-server
 
 static: CMakeFiles/static
 static: CMakeFiles/static.dir/build.make
@@ -82,6 +82,6 @@ CMakeFiles/static.dir/clean:
 .PHONY : CMakeFiles/static.dir/clean
 
 CMakeFiles/static.dir/depend:
-	cd /mydata/Server/cmake-build-debug && $(CMAKE_COMMAND) -E cmake_depends "Unix Makefiles" /mydata/Server /mydata/Server /mydata/Server/cmake-build-debug /mydata/Server/cmake-build-debug /mydata/Server/cmake-build-debug/CMakeFiles/static.dir/DependInfo.cmake "--color=$(COLOR)"
+	cd /users/jiangyw/Server/cmake-build-debug && $(CMAKE_COMMAND) -E cmake_depends "Unix Makefiles" /users/jiangyw/Server /users/jiangyw/Server /users/jiangyw/Server/cmake-build-debug /users/jiangyw/Server/cmake-build-debug /users/jiangyw/Server/cmake-build-debug/CMakeFiles/static.dir/DependInfo.cmake "--color=$(COLOR)"
 .PHONY : CMakeFiles/static.dir/depend
 

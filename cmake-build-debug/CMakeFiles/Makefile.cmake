@@ -7,9 +7,6 @@ set(CMAKE_DEPENDS_GENERATOR "Unix Makefiles")
 # The top level Makefile was generated from the following files:
 set(CMAKE_MAKEFILE_DEPENDS
   "CMakeCache.txt"
-  "/mydata/Server/CMakeLists.txt"
-  "CMakeFiles/3.29.6/CMakeCCompiler.cmake"
-  "CMakeFiles/3.29.6/CMakeSystem.cmake"
   "/users/jiangyw/.cache/JetBrains/RemoteDev/dist/1729cdbf0ed8b_CLion-2024.2.2/bin/cmake/linux/x64/share/cmake-3.29/Modules/CMakeCCompiler.cmake.in"
   "/users/jiangyw/.cache/JetBrains/RemoteDev/dist/1729cdbf0ed8b_CLion-2024.2.2/bin/cmake/linux/x64/share/cmake-3.29/Modules/CMakeCCompilerABI.c"
   "/users/jiangyw/.cache/JetBrains/RemoteDev/dist/1729cdbf0ed8b_CLion-2024.2.2/bin/cmake/linux/x64/share/cmake-3.29/Modules/CMakeCInformation.cmake"
@@ -90,6 +87,9 @@ set(CMAKE_MAKEFILE_DEPENDS
   "/users/jiangyw/.cache/JetBrains/RemoteDev/dist/1729cdbf0ed8b_CLion-2024.2.2/bin/cmake/linux/x64/share/cmake-3.29/Modules/Platform/Linux-Initialize.cmake"
   "/users/jiangyw/.cache/JetBrains/RemoteDev/dist/1729cdbf0ed8b_CLion-2024.2.2/bin/cmake/linux/x64/share/cmake-3.29/Modules/Platform/Linux.cmake"
   "/users/jiangyw/.cache/JetBrains/RemoteDev/dist/1729cdbf0ed8b_CLion-2024.2.2/bin/cmake/linux/x64/share/cmake-3.29/Modules/Platform/UnixPaths.cmake"
+  "/users/jiangyw/Server/CMakeLists.txt"
+  "CMakeFiles/3.29.6/CMakeCCompiler.cmake"
+  "CMakeFiles/3.29.6/CMakeSystem.cmake"
   )
 
 # The corresponding makefile is:

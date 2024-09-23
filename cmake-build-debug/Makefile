@@ -57,10 +57,10 @@ RM = /users/jiangyw/.cache/JetBrains/RemoteDev/dist/1729cdbf0ed8b_CLion-2024.2.2
 EQUALS = =
 
 # The top-level source directory on which CMake was run.
-CMAKE_SOURCE_DIR = /mydata/Server
+CMAKE_SOURCE_DIR = /users/jiangyw/Server
 
 # The top-level build directory on which CMake was run.
-CMAKE_BINARY_DIR = /mydata/Server/cmake-build-debug
+CMAKE_BINARY_DIR = /users/jiangyw/Server/cmake-build-debug
 
 #=============================================================================
 # Targets provided globally by CMake.
@@ -132,9 +132,9 @@ install/strip/fast: preinstall/fast
 
 # The main all target
 all: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /mydata/Server/cmake-build-debug/CMakeFiles /mydata/Server/cmake-build-debug//CMakeFiles/progress.marks
+	$(CMAKE_COMMAND) -E cmake_progress_start /users/jiangyw/Server/cmake-build-debug/CMakeFiles /users/jiangyw/Server/cmake-build-debug//CMakeFiles/progress.marks
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 all
-	$(CMAKE_COMMAND) -E cmake_progress_start /mydata/Server/cmake-build-debug/CMakeFiles 0
+	$(CMAKE_COMMAND) -E cmake_progress_start /users/jiangyw/Server/cmake-build-debug/CMakeFiles 0
 .PHONY : all
 
 # The main clean target

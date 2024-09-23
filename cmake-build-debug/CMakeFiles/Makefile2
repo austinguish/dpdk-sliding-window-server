@@ -54,10 +54,10 @@ RM = /users/jiangyw/.cache/JetBrains/RemoteDev/dist/1729cdbf0ed8b_CLion-2024.2.2
 EQUALS = =
 
 # The top-level source directory on which CMake was run.
-CMAKE_SOURCE_DIR = /mydata/Server
+CMAKE_SOURCE_DIR = /users/jiangyw/Server
 
 # The top-level build directory on which CMake was run.
-CMAKE_BINARY_DIR = /mydata/Server/cmake-build-debug
+CMAKE_BINARY_DIR = /users/jiangyw/Server/cmake-build-debug
 
 #=============================================================================
 # Directory level rules for the build root directory
@@ -84,14 +84,14 @@ clean: CMakeFiles/static.dir/clean
 CMakeFiles/lab1-server-shared.dir/all:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/lab1-server-shared.dir/build.make CMakeFiles/lab1-server-shared.dir/depend
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/lab1-server-shared.dir/build.make CMakeFiles/lab1-server-shared.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/mydata/Server/cmake-build-debug/CMakeFiles --progress-num=1,2 "Built target lab1-server-shared"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/users/jiangyw/Server/cmake-build-debug/CMakeFiles --progress-num=1,2 "Built target lab1-server-shared"
 .PHONY : CMakeFiles/lab1-server-shared.dir/all
 
 # Build rule for subdir invocation for target.
 CMakeFiles/lab1-server-shared.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /mydata/Server/cmake-build-debug/CMakeFiles 2
+	$(CMAKE_COMMAND) -E cmake_progress_start /users/jiangyw/Server/cmake-build-debug/CMakeFiles 2
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 CMakeFiles/lab1-server-shared.dir/all
-	$(CMAKE_COMMAND) -E cmake_progress_start /mydata/Server/cmake-build-debug/CMakeFiles 0
+	$(CMAKE_COMMAND) -E cmake_progress_start /users/jiangyw/Server/cmake-build-debug/CMakeFiles 0
 .PHONY : CMakeFiles/lab1-server-shared.dir/rule
 
 # Convenience name for target.
@@ -110,14 +110,14 @@ CMakeFiles/lab1-server-shared.dir/clean:
 CMakeFiles/lab1-server-static.dir/all:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/lab1-server-static.dir/build.make CMakeFiles/lab1-server-static.dir/depend
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/lab1-server-static.dir/build.make CMakeFiles/lab1-server-static.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/mydata/Server/cmake-build-debug/CMakeFiles --progress-num=3,4 "Built target lab1-server-static"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/users/jiangyw/Server/cmake-build-debug/CMakeFiles --progress-num=3,4 "Built target lab1-server-static"
 .PHONY : CMakeFiles/lab1-server-static.dir/all
 
 # Build rule for subdir invocation for target.
 CMakeFiles/lab1-server-static.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /mydata/Server/cmake-build-debug/CMakeFiles 2
+	$(CMAKE_COMMAND) -E cmake_progress_start /users/jiangyw/Server/cmake-build-debug/CMakeFiles 2
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 CMakeFiles/lab1-server-static.dir/all
-	$(CMAKE_COMMAND) -E cmake_progress_start /mydata/Server/cmake-build-debug/CMakeFiles 0
+	$(CMAKE_COMMAND) -E cmake_progress_start /users/jiangyw/Server/cmake-build-debug/CMakeFiles 0
 .PHONY : CMakeFiles/lab1-server-static.dir/rule
 
 # Convenience name for target.
@@ -136,14 +136,14 @@ CMakeFiles/lab1-server-static.dir/clean:
 CMakeFiles/static.dir/all: CMakeFiles/lab1-server-static.dir/all
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/static.dir/build.make CMakeFiles/static.dir/depend
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/static.dir/build.make CMakeFiles/static.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/mydata/Server/cmake-build-debug/CMakeFiles --progress-num= "Built target static"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/users/jiangyw/Server/cmake-build-debug/CMakeFiles --progress-num= "Built target static"
 .PHONY : CMakeFiles/static.dir/all
 
 # Build rule for subdir invocation for target.
 CMakeFiles/static.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /mydata/Server/cmake-build-debug/CMakeFiles 2
+	$(CMAKE_COMMAND) -E cmake_progress_start /users/jiangyw/Server/cmake-build-debug/CMakeFiles 2
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 CMakeFiles/static.dir/all
-	$(CMAKE_COMMAND) -E cmake_progress_start /mydata/Server/cmake-build-debug/CMakeFiles 0
+	$(CMAKE_COMMAND) -E cmake_progress_start /users/jiangyw/Server/cmake-build-debug/CMakeFiles 0
 .PHONY : CMakeFiles/static.dir/rule
 
 # Convenience name for target.

@@ -68,8 +68,8 @@
 	"kind" : "codemodel",
 	"paths" : 
 	{
-		"build" : "/mydata/Server/cmake-build-debug",
-		"source" : "/mydata/Server"
+		"build" : "/users/jiangyw/Server/cmake-build-debug",
+		"source" : "/users/jiangyw/Server"
 	},
 	"version" : 
 	{
