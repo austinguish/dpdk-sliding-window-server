@@ -215,6 +215,10 @@ static int get_port(struct sockaddr_in *src,
 
     *payload_len = pkt->pkt_len - header;
     *payload = (void *)p;
+    // print the received time stamp in the payload
+    // the data is uint64_t
+    //print out
+    printf("Received timestamp: %" PRIu64 "\n", payload);
     return ret;
 }
 
@@ -292,7 +296,8 @@ lcore_main(void) {
 
                 udp_h = rte_pktmbuf_mtod_offset(pkt, struct udp_header_extra *,
                                                 sizeof(struct rte_ether_hdr) + sizeof(struct rte_ipv4_hdr));
-                // rte_pktmbuf_dump(stdout, pkt, pkt->pkt_len);
+                rte_pktmbuf_dump(stdout, pkt, pkt->pkt_len);
+                // read the payload
                 rec++;
 
                 // Construct and send Acks
@@ -335,6 +340,7 @@ lcore_main(void) {
                 udp_h_ack->src_port = udp_h->udp_hdr.dst_port;
                 udp_h_ack->dst_port = udp_h->udp_hdr.src_port;
                 udp_h_ack->dgram_len = rte_cpu_to_be_16(sizeof(struct udp_header_extra) + ack_len);
+                udp_h_ack_ext->window_size = 11451;
                 printf("received window size is %d\n",udp_h->window_size);
                 uint16_t udp_cksum = rte_ipv4_udptcp_cksum(ip_h_ack, (void *)udp_h_ack);
 

@@ -53,6 +53,7 @@ CMAKE_BINARY_DIR = /users/jiangyw/Server/build
 # Directory level rules for the build root directory
 
 # The main recursive "all" target.
+all: CMakeFiles/lab1-client-shared.dir/all
 all: CMakeFiles/lab1-server-static.dir/all
 all: CMakeFiles/lab1-server-shared.dir/all
 
@@ -65,6 +66,7 @@ preinstall:
 
 # The main recursive "clean" target.
 clean: CMakeFiles/static.dir/clean
+clean: CMakeFiles/lab1-client-shared.dir/clean
 clean: CMakeFiles/lab1-server-static.dir/clean
 clean: CMakeFiles/lab1-server-shared.dir/clean
 
@@ -98,13 +100,40 @@ CMakeFiles/static.dir/clean:
 .PHONY : CMakeFiles/static.dir/clean
 
 #=============================================================================
+# Target rules for target CMakeFiles/lab1-client-shared.dir
+
+# All Build rule for target.
+CMakeFiles/lab1-client-shared.dir/all:
+	$(MAKE) -f CMakeFiles/lab1-client-shared.dir/build.make CMakeFiles/lab1-client-shared.dir/depend
+	$(MAKE) -f CMakeFiles/lab1-client-shared.dir/build.make CMakeFiles/lab1-client-shared.dir/build
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/users/jiangyw/Server/build/CMakeFiles --progress-num=1,2 "Built target lab1-client-shared"
+.PHONY : CMakeFiles/lab1-client-shared.dir/all
+
+# Build rule for subdir invocation for target.
+CMakeFiles/lab1-client-shared.dir/rule: cmake_check_build_system
+	$(CMAKE_COMMAND) -E cmake_progress_start /users/jiangyw/Server/build/CMakeFiles 2
+	$(MAKE) -f CMakeFiles/Makefile2 CMakeFiles/lab1-client-shared.dir/all
+	$(CMAKE_COMMAND) -E cmake_progress_start /users/jiangyw/Server/build/CMakeFiles 0
+.PHONY : CMakeFiles/lab1-client-shared.dir/rule
+
+# Convenience name for target.
+lab1-client-shared: CMakeFiles/lab1-client-shared.dir/rule
+
+.PHONY : lab1-client-shared
+
+# clean rule for target.
+CMakeFiles/lab1-client-shared.dir/clean:
+	$(MAKE) -f CMakeFiles/lab1-client-shared.dir/build.make CMakeFiles/lab1-client-shared.dir/clean
+.PHONY : CMakeFiles/lab1-client-shared.dir/clean
+
+#=============================================================================
 # Target rules for target CMakeFiles/lab1-server-static.dir
 
 # All Build rule for target.
 CMakeFiles/lab1-server-static.dir/all:
 	$(MAKE) -f CMakeFiles/lab1-server-static.dir/build.make CMakeFiles/lab1-server-static.dir/depend
 	$(MAKE) -f CMakeFiles/lab1-server-static.dir/build.make CMakeFiles/lab1-server-static.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/users/jiangyw/Server/build/CMakeFiles --progress-num=3,4 "Built target lab1-server-static"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/users/jiangyw/Server/build/CMakeFiles --progress-num=5,6 "Built target lab1-server-static"
 .PHONY : CMakeFiles/lab1-server-static.dir/all
 
 # Build rule for subdir invocation for target.
@@ -131,7 +160,7 @@ CMakeFiles/lab1-server-static.dir/clean:
 CMakeFiles/lab1-server-shared.dir/all:
 	$(MAKE) -f CMakeFiles/lab1-server-shared.dir/build.make CMakeFiles/lab1-server-shared.dir/depend
 	$(MAKE) -f CMakeFiles/lab1-server-shared.dir/build.make CMakeFiles/lab1-server-shared.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/users/jiangyw/Server/build/CMakeFiles --progress-num=1,2 "Built target lab1-server-shared"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/users/jiangyw/Server/build/CMakeFiles --progress-num=3,4 "Built target lab1-server-shared"
 .PHONY : CMakeFiles/lab1-server-shared.dir/all
 
 # Build rule for subdir invocation for target.

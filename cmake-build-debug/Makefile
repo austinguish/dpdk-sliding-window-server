@@ -188,6 +188,19 @@ lab1-server-static/fast:
 .PHONY : lab1-server-static/fast
 
 #=============================================================================
+# Target rules for targets named lab1-client-shared
+
+# Build rule for target.
+lab1-client-shared: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 lab1-client-shared
+.PHONY : lab1-client-shared
+
+# fast build rule for target.
+lab1-client-shared/fast:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/lab1-client-shared.dir/build.make CMakeFiles/lab1-client-shared.dir/build
+.PHONY : lab1-client-shared/fast
+
+#=============================================================================
 # Target rules for targets named static
 
 # Build rule for target.
@@ -199,6 +212,30 @@ static: cmake_check_build_system
 static/fast:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/static.dir/build.make CMakeFiles/static.dir/build
 .PHONY : static/fast
+
+lab1-client.o: lab1-client.c.o
+.PHONY : lab1-client.o
+
+# target to build an object file
+lab1-client.c.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/lab1-client-shared.dir/build.make CMakeFiles/lab1-client-shared.dir/lab1-client.c.o
+.PHONY : lab1-client.c.o
+
+lab1-client.i: lab1-client.c.i
+.PHONY : lab1-client.i
+
+# target to preprocess a source file
+lab1-client.c.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/lab1-client-shared.dir/build.make CMakeFiles/lab1-client-shared.dir/lab1-client.c.i
+.PHONY : lab1-client.c.i
+
+lab1-client.s: lab1-client.c.s
+.PHONY : lab1-client.s
+
+# target to generate assembly for a file
+lab1-client.c.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/lab1-client-shared.dir/build.make CMakeFiles/lab1-client-shared.dir/lab1-client.c.s
+.PHONY : lab1-client.c.s
 
 lab1-server.o: lab1-server.c.o
 .PHONY : lab1-server.o
@@ -240,8 +277,12 @@ help:
 	@echo "... list_install_components"
 	@echo "... rebuild_cache"
 	@echo "... static"
+	@echo "... lab1-client-shared"
 	@echo "... lab1-server-shared"
 	@echo "... lab1-server-static"
+	@echo "... lab1-client.o"
+	@echo "... lab1-client.i"
+	@echo "... lab1-client.s"
 	@echo "... lab1-server.o"
 	@echo "... lab1-server.i"
 	@echo "... lab1-server.s"

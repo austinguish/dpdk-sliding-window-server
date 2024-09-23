@@ -1,24 +1,25 @@
 cmake_minimum_required(VERSION 3.10)
-project(lab1-server C)
+project(lab1 C)
 
-# Set the binary name
-set(APP_NAME lab1-server)
+# Set the binary names
+set(SERVER_NAME lab1-server)
+set(CLIENT_NAME lab1-client)
 
 # Source files
-set(SOURCES lab1-server.c)
+set(SERVER_SOURCES lab1-server.c)
+set(CLIENT_SOURCES lab1-client.c)
 
 # Find DPDK package
 find_package(PkgConfig REQUIRED)
 pkg_check_modules(DPDK REQUIRED libdpdk)
-
 if(NOT DPDK_FOUND)
     message(FATAL_ERROR "DPDK not found")
 endif()
 
 # Add executable targets
-add_executable(${APP_NAME}-shared ${SOURCES}
-        udp_header.h)
-add_executable(${APP_NAME}-static ${SOURCES})
+add_executable(${SERVER_NAME}-shared ${SERVER_SOURCES} udp_header.h)
+add_executable(${SERVER_NAME}-static ${SERVER_SOURCES})
+add_executable(${CLIENT_NAME}-shared ${CLIENT_SOURCES})
 
 # Set compile options
 set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Og -DALLOW_EXPERIMENTAL_API")
@@ -27,30 +28,39 @@ set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Og -DALLOW_EXPERIMENTAL_API")
 set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -march=native -mtune=native")
 
 # Include directories
-target_include_directories(${APP_NAME}-shared PRIVATE ${DPDK_INCLUDE_DIRS})
-target_include_directories(${APP_NAME}-static PRIVATE ${DPDK_INCLUDE_DIRS})
+target_include_directories(${SERVER_NAME}-shared PRIVATE ${DPDK_INCLUDE_DIRS})
+target_include_directories(${SERVER_NAME}-static PRIVATE ${DPDK_INCLUDE_DIRS})
+target_include_directories(${CLIENT_NAME}-shared PRIVATE ${DPDK_INCLUDE_DIRS})
 
 # Link libraries
-target_link_libraries(${APP_NAME}-shared ${DPDK_LIBRARIES})
-target_link_libraries(${APP_NAME}-static ${DPDK_STATIC_LIBRARIES})
+target_link_libraries(${SERVER_NAME}-shared ${DPDK_LIBRARIES})
+target_link_libraries(${SERVER_NAME}-static ${DPDK_STATIC_LIBRARIES})
+target_link_libraries(${CLIENT_NAME}-shared ${DPDK_LIBRARIES})
 
-# Create symlink for the main executable
+# Create symlink for the main executables
 add_custom_command(
-    TARGET ${APP_NAME}-shared POST_BUILD
-    COMMAND ${CMAKE_COMMAND} -E create_symlink
-        $<TARGET_FILE_NAME:${APP_NAME}-shared>
-        ${CMAKE_BINARY_DIR}/${APP_NAME}
+        TARGET ${SERVER_NAME}-shared POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E create_symlink
+        $<TARGET_FILE_NAME:${SERVER_NAME}-shared>
+        ${CMAKE_BINARY_DIR}/${SERVER_NAME}
+)
+
+add_custom_command(
+        TARGET ${CLIENT_NAME}-shared POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E create_symlink
+        $<TARGET_FILE_NAME:${CLIENT_NAME}-shared>
+        ${CMAKE_BINARY_DIR}/${CLIENT_NAME}
 )
 
 # Custom target for static build
 add_custom_target(static
-    COMMAND ${CMAKE_COMMAND} -E create_symlink
-        $<TARGET_FILE_NAME:${APP_NAME}-static>
-        ${CMAKE_BINARY_DIR}/${APP_NAME}
-    DEPENDS ${APP_NAME}-static
+        COMMAND ${CMAKE_COMMAND} -E create_symlink
+        $<TARGET_FILE_NAME:${SERVER_NAME}-static>
+        ${CMAKE_BINARY_DIR}/${SERVER_NAME}
+        DEPENDS ${SERVER_NAME}-static
 )
 
 # Install rules
-install(TARGETS ${APP_NAME}-shared ${APP_NAME}-static
-    RUNTIME DESTINATION bin
+install(TARGETS ${SERVER_NAME}-shared ${SERVER_NAME}-static ${CLIENT_NAME}-shared
+        RUNTIME DESTINATION bin
 )

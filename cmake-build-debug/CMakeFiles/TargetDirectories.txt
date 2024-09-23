@@ -1,5 +1,6 @@
 /users/jiangyw/Server/cmake-build-debug/CMakeFiles/lab1-server-shared.dir
 /users/jiangyw/Server/cmake-build-debug/CMakeFiles/lab1-server-static.dir
+/users/jiangyw/Server/cmake-build-debug/CMakeFiles/lab1-client-shared.dir
 /users/jiangyw/Server/cmake-build-debug/CMakeFiles/static.dir
 /users/jiangyw/Server/cmake-build-debug/CMakeFiles/edit_cache.dir
 /users/jiangyw/Server/cmake-build-debug/CMakeFiles/rebuild_cache.dir
