@@ -1,6 +1,3 @@
-//
-// Created by jiangyw on 24-9-23.
-//
 /* SPDX-License-Identifier: BSD-3-Clause
  * Copyright(c) 2010-2015 Intel Corporation
  */
@@ -25,13 +22,11 @@
 
 #define RX_RING_SIZE 1024
 #define TX_RING_SIZE 1024
-
 #define NUM_MBUFS 8191
 #define MBUF_CACHE_SIZE 250
 #define BURST_SIZE 32
 #define MAX_FLOW_NUM 100
 #define PORT_NUM 5001
-
 uint32_t NUM_PING = 100;
 
 /* Define the mempool globally */
@@ -46,6 +41,50 @@ size_t max_send = 100;
 int flow_size = 10000;
 int packet_len = 1000;
 int flow_num = 1;
+struct flow_state
+{
+  uint16_t next_seq_to_send;
+  uint16_t last_ack_received;
+  uint16_t last_sent;
+  uint16_t window_size;
+  struct rte_ring *unacked_packets;
+  struct rte_ring *unsent_packets;
+}flow_states[MAX_FLOW_NUM];
+
+void init_flow_state()
+{
+  for (int i=0;i<flow_num;i++)
+  {
+    flow_states[i].next_seq_to_send = 0;
+    flow_states[i].last_ack_received=0;
+    flow_states[i].last_sent=0;
+    flow_states[i].window_size=window_len;
+    flow_states[i].unacked_packets = rte_ring_create(
+            "unacked_packets", NUM_MBUFS, rte_socket_id(), RING_F_SP_ENQ | RING_F_SC_DEQ);
+    flow_states[i].unsent_packets = rte_ring_create(
+            "unsent_packets", NUM_MBUFS, rte_socket_id(), RING_F_SP_ENQ | RING_F_SC_DEQ);
+  }
+}
+
+static struct rte_mbuf *create_packet(size_t flow_id) {
+  struct rte_mbuf *pkt = rte_pktmbuf_alloc(mbuf_pool);
+  if (pkt == NULL) {
+    printf("Error allocating tx mbuf\n");
+    return NULL;
+  }
+
+  // Set up packet headers and data here
+  struct udp_header_extra *udp_hdr_ext = (struct udp_header_extra *)
+      (rte_pktmbuf_mtod(pkt, char *) + sizeof(struct rte_ether_hdr) + sizeof(struct rte_ipv4_hdr));
+
+  // Initialize UDP header extra fields
+  udp_hdr_ext->seq = rte_cpu_to_be_16(flow_states[flow_id].next_seq_to_send);
+  udp_hdr_ext->window_size = rte_cpu_to_be_16(flow_states[flow_id].window_size);
+
+  // Set up other packet fields...
+
+  return pkt;
+}
 
 
 
@@ -134,14 +173,19 @@ static int parse_packet(struct sockaddr_in *src, struct sockaddr_in *dst,
   // check udp header
   struct udp_header_extra *const udp_hdr_ext = (struct udp_header_extra *)(p);
   printf("Received packet with window size %u\n", udp_hdr_ext->window_size);
+
   max_send = udp_hdr_ext->window_size;
-  // set
+  // set 
   p += sizeof(*udp_hdr_ext);
   header += sizeof(*udp_hdr_ext);
 
   // In network byte order.
   in_port_t udp_src_port = udp_hdr_ext->udp_hdr.src_port;
   in_port_t udp_dst_port = udp_hdr_ext->udp_hdr.dst_port;
+  // print out the port number
+  printf("Received packet with src port %u and dst port %u\n",
+         rte_be_to_cpu_16(udp_hdr_ext->udp_hdr.src_port),
+         rte_be_to_cpu_16(udp_hdr_ext->udp_hdr.dst_port));
 
   int ret = rte_be_to_cpu_16(udp_hdr_ext->udp_hdr.dst_port) - PORT_NUM;
   if (ret < 0 || ret >= MAX_FLOW_NUM) {
@@ -247,11 +291,7 @@ static inline int port_init(uint16_t port, struct rte_mempool *mbuf_pool) {
 
 /* >8 End Basic forwarding application lcore. */
 static void send_packet(struct rte_mbuf *pkt, struct rte_ether_hdr *eth_hdr,struct rte_ether_addr dst,struct rte_ipv4_hdr *ipv4_hdr,size_t port_id,uint16_t *seq, int *outstanding){
-  pkt = rte_pktmbuf_alloc(mbuf_pool);
-    if (pkt == NULL) {
-      printf("Error allocating tx mbuf\n");
-      return;
-    }
+
     size_t header_size = 0;
 
     uint8_t *ptr = rte_pktmbuf_mtod(pkt, uint8_t *);
@@ -352,6 +392,7 @@ static void receive(uint16_t *nb_rx, struct rte_mbuf **pkts, u_int64_t *reqs, in
 }
 
 static void lcore_main() {
+  init_flow_state();
   struct rte_mbuf *pkts[BURST_SIZE];
   struct rte_mbuf *pkt;
   // char *buf_ptr;
@@ -378,13 +419,13 @@ static void lcore_main() {
   }
 
   while (seq[port_id] < NUM_PING) {
-
+    
     send_packet(pkt, eth_hdr, dst, ipv4_hdr, port_id, seq, outstanding);
     printf("sent a packet!\n");
     /* now poll on receiving packets */
     receive(&nb_rx, pkts, &reqs, outstanding, port_id);
 
-    // port_id = (port_id+1) % flow_num;
+    port_id = (port_id+1) % flow_num;
   }
   printf("Sent %" PRIu64 " packets.\n", reqs);
 }
@@ -417,7 +458,7 @@ int main(int argc, char *argv[]) {
   argv += ret;
 
   nb_ports = rte_eth_dev_count_avail();
-  printf("the number of nb_ports is %d",nb_ports);
+  printf("Number of available ports: %u\n", nb_ports);
   /* Allocates mempool to hold the mbufs. 8< */
   mbuf_pool = rte_pktmbuf_pool_create(
       "MBUF_POOL", NUM_MBUFS * nb_ports, MBUF_CACHE_SIZE, 0,
