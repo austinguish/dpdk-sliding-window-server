@@ -8,7 +8,7 @@ set(CMAKE_DEPENDS_LANGUAGES
 
 # The set of dependency files which are needed:
 set(CMAKE_DEPENDS_DEPENDENCY_FILES
-  "/home/tianyi/Server/lab1-server.c" "CMakeFiles/lab1-server-shared.dir/lab1-server.c.o" "gcc" "CMakeFiles/lab1-server-shared.dir/lab1-server.c.o.d"
+  "/mydata/Server/lab1-server.c" "CMakeFiles/lab1-server-shared.dir/lab1-server.c.o" "gcc" "CMakeFiles/lab1-server-shared.dir/lab1-server.c.o.d"
   )
 
 # Targets to which this target links which contain Fortran sources.

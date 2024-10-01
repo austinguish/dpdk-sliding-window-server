@@ -60,7 +60,7 @@
 				{
 					"directoryIndex" : 0,
 					"id" : "lab1-server-static::@6890427a1f51a3e7e1df",
-					"jsonFile" : "target-lab1-server-static-Debug-c181661aaa85b82abdf9.json",
+					"jsonFile" : "target-lab1-server-static-Debug-a24ba4f7ef383e6c626c.json",
 					"name" : "lab1-server-static",
 					"projectIndex" : 0
 				},
@@ -77,8 +77,8 @@
 	"kind" : "codemodel",
 	"paths" : 
 	{
-		"build" : "/home/tianyi/Server/cmake-build-debug",
-		"source" : "/home/tianyi/Server"
+		"build" : "/mydata/Server/cmake-build-debug",
+		"source" : "/mydata/Server"
 	},
 	"version" : 
 	{
