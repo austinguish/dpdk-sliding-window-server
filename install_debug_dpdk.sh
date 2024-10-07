@@ -1,7 +1,7 @@
 #!/usr/bin/bash
 sudo chmod 770 /mydata
 sudo apt update
-sudo apt install cmake -y
+sudo apt install cmake libnuma-dev -y
 cd /mydata && {
     git clone https://github.com/DPDK/dpdk
     cd dpdk
