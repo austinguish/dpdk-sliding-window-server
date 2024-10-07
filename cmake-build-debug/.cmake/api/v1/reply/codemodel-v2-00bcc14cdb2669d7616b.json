@@ -7,7 +7,7 @@
 				{
 					"build" : ".",
 					"hasInstallRule" : true,
-					"jsonFile" : "directory-.-Debug-3b5cfb8a061a4c6bdb70.json",
+					"jsonFile" : "directory-.-Debug-b2bb9ba4163d85cad8f9.json",
 					"minimumCMakeVersion" : 
 					{
 						"string" : "3.10"
@@ -46,28 +46,28 @@
 				{
 					"directoryIndex" : 0,
 					"id" : "lab1-client-shared::@6890427a1f51a3e7e1df",
-					"jsonFile" : "target-lab1-client-shared-Debug-147be924275c9a0d23f1.json",
+					"jsonFile" : "target-lab1-client-shared-Debug-f7056d93ae985f08cf53.json",
 					"name" : "lab1-client-shared",
 					"projectIndex" : 0
 				},
 				{
 					"directoryIndex" : 0,
 					"id" : "lab1-server-shared::@6890427a1f51a3e7e1df",
-					"jsonFile" : "target-lab1-server-shared-Debug-12c04d9e4f35a9aebba1.json",
+					"jsonFile" : "target-lab1-server-shared-Debug-4d33e270455695d9a6d1.json",
 					"name" : "lab1-server-shared",
 					"projectIndex" : 0
 				},
 				{
 					"directoryIndex" : 0,
 					"id" : "lab1-server-static::@6890427a1f51a3e7e1df",
-					"jsonFile" : "target-lab1-server-static-Debug-a24ba4f7ef383e6c626c.json",
+					"jsonFile" : "target-lab1-server-static-Debug-8392a2f39e6dcbcb9cc8.json",
 					"name" : "lab1-server-static",
 					"projectIndex" : 0
 				},
 				{
 					"directoryIndex" : 0,
 					"id" : "static::@6890427a1f51a3e7e1df",
-					"jsonFile" : "target-static-Debug-324be90659f39e44c4b9.json",
+					"jsonFile" : "target-static-Debug-60cdd2c059d69cc7fc85.json",
 					"name" : "static",
 					"projectIndex" : 0
 				}
@@ -77,8 +77,8 @@
 	"kind" : "codemodel",
 	"paths" : 
 	{
-		"build" : "/mydata/Server/cmake-build-debug",
-		"source" : "/mydata/Server"
+		"build" : "/home/tianyi/Server/cmake-build-debug",
+		"source" : "/home/tianyi/Server"
 	},
 	"version" : 
 	{

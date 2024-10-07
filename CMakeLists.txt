@@ -6,8 +6,10 @@ set(SERVER_NAME lab1-server)
 set(CLIENT_NAME lab1-client)
 
 # Source files
-set(SERVER_SOURCES lab1-server.c)
-set(CLIENT_SOURCES lab1-client.c)
+set(SERVER_SOURCES lab1-server.c
+        flowstate.h)
+set(CLIENT_SOURCES lab1-client.c
+        flowstate.h)
 
 # Find DPDK package
 find_package(PkgConfig REQUIRED)
@@ -17,9 +19,12 @@ if(NOT DPDK_FOUND)
 endif()
 
 # Add executable targets
-add_executable(${SERVER_NAME}-shared ${SERVER_SOURCES} udp_header.h)
-add_executable(${SERVER_NAME}-static ${SERVER_SOURCES})
-add_executable(${CLIENT_NAME}-shared ${CLIENT_SOURCES})
+add_executable(${SERVER_NAME}-shared ${SERVER_SOURCES} udp_header.h
+        flowstate.h)
+add_executable(${SERVER_NAME}-static ${SERVER_SOURCES}
+        flowstate.h)
+add_executable(${CLIENT_NAME}-shared ${CLIENT_SOURCES}
+        flowstate.h)
 
 # Set compile options
 set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Og -DALLOW_EXPERIMENTAL_API")

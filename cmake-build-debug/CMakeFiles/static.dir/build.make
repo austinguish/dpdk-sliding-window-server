@@ -44,19 +44,19 @@ cmake_force:
 SHELL = /bin/sh
 
 # The CMake executable.
-CMAKE_COMMAND = /mydata/1729cdbf0ed8b_CLion-2024.2.2/bin/cmake/linux/x64/bin/cmake
+CMAKE_COMMAND = /home/tianyi/.cache/JetBrains/RemoteDev/dist/1729cdbf0ed8b_CLion-2024.2.2/bin/cmake/linux/x64/bin/cmake
 
 # The command to remove a file.
-RM = /mydata/1729cdbf0ed8b_CLion-2024.2.2/bin/cmake/linux/x64/bin/cmake -E rm -f
+RM = /home/tianyi/.cache/JetBrains/RemoteDev/dist/1729cdbf0ed8b_CLion-2024.2.2/bin/cmake/linux/x64/bin/cmake -E rm -f
 
 # Escaping for special characters.
 EQUALS = =
 
 # The top-level source directory on which CMake was run.
-CMAKE_SOURCE_DIR = /mydata/Server
+CMAKE_SOURCE_DIR = /home/tianyi/Server
 
 # The top-level build directory on which CMake was run.
-CMAKE_BINARY_DIR = /mydata/Server/cmake-build-debug
+CMAKE_BINARY_DIR = /home/tianyi/Server/cmake-build-debug
 
 # Utility rule file for static.
 
@@ -67,7 +67,7 @@ include CMakeFiles/static.dir/compiler_depend.make
 include CMakeFiles/static.dir/progress.make
 
 CMakeFiles/static: lab1-server-static
-	/mydata/1729cdbf0ed8b_CLion-2024.2.2/bin/cmake/linux/x64/bin/cmake -E create_symlink lab1-server-static /mydata/Server/cmake-build-debug/lab1-server
+	/home/tianyi/.cache/JetBrains/RemoteDev/dist/1729cdbf0ed8b_CLion-2024.2.2/bin/cmake/linux/x64/bin/cmake -E create_symlink lab1-server-static /home/tianyi/Server/cmake-build-debug/lab1-server
 
 static: CMakeFiles/static
 static: CMakeFiles/static.dir/build.make
@@ -82,6 +82,6 @@ CMakeFiles/static.dir/clean:
 .PHONY : CMakeFiles/static.dir/clean
 
 CMakeFiles/static.dir/depend:
-	cd /mydata/Server/cmake-build-debug && $(CMAKE_COMMAND) -E cmake_depends "Unix Makefiles" /mydata/Server /mydata/Server /mydata/Server/cmake-build-debug /mydata/Server/cmake-build-debug /mydata/Server/cmake-build-debug/CMakeFiles/static.dir/DependInfo.cmake "--color=$(COLOR)"
+	cd /home/tianyi/Server/cmake-build-debug && $(CMAKE_COMMAND) -E cmake_depends "Unix Makefiles" /home/tianyi/Server /home/tianyi/Server /home/tianyi/Server/cmake-build-debug /home/tianyi/Server/cmake-build-debug /home/tianyi/Server/cmake-build-debug/CMakeFiles/static.dir/DependInfo.cmake "--color=$(COLOR)"
 .PHONY : CMakeFiles/static.dir/depend
 
