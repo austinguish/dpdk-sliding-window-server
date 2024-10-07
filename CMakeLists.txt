@@ -33,6 +33,10 @@ add_executable(${CLIENT_NAME}-shared ${CLIENT_SOURCES}
         flowstate.h
 )
 
+add_executable(${CLIENT_NAME}-static ${CLIENT_SOURCES}
+        flowstate.h
+)
+
 # Set compile options
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Og -DALLOW_EXPERIMENTAL_API -mssse3")
 
@@ -43,10 +47,12 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -march=native -mtune=native -mssse3")
 target_include_directories(${SERVER_NAME}-shared PRIVATE ${DPDK_INCLUDE_DIRS})
 target_include_directories(${SERVER_NAME}-static PRIVATE ${DPDK_INCLUDE_DIRS})
 target_include_directories(${CLIENT_NAME}-shared PRIVATE ${DPDK_INCLUDE_DIRS})
+target_include_directories(${CLIENT_NAME}-static PRIVATE ${DPDK_INCLUDE_DIRS})
 
 # Link libraries
 target_link_libraries(${SERVER_NAME}-shared ${DPDK_LIBRARIES})
 target_link_libraries(${SERVER_NAME}-static ${DPDK_STATIC_LIBRARIES})
+target_link_libraries(${CLIENT_NAME}-static ${DPDK_LIBRARIES})
 target_link_libraries(${CLIENT_NAME}-shared ${DPDK_LIBRARIES})
 
 # Create symlink for the main executables

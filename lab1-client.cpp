@@ -59,7 +59,7 @@ struct flow_state_sender* flow_table[MAX_FLOW_NUM];
 //    // last written to the window
 //    uint16_t last_written; // last packet send to window
 
-const rte_ether_addr dst = {{0x14, 0x58, 0xD0, 0x58, 0xdf, 0x43}};
+const rte_ether_addr dst = {{0x14, 0x58, 0xD0, 0x58, 0xee, 0xa3}};
 
 void init_flow_table()
 {
@@ -364,8 +364,8 @@ static void send_packet(int flow_id)
 
     // Calculate available window in packets
     uint32_t available_window = state->advertised_window > packets_in_flight
-                                ? state->advertised_window - packets_in_flight
-                                : 0;
+                                    ? state->advertised_window - packets_in_flight
+                                    : 0;
 
     // Determine how many packets we can send
     uint32_t packets_to_send = std::min(available_window,
@@ -400,11 +400,13 @@ static void send_packet(int flow_id)
     // state->last_send_time = rte_get_timer_cycles();
 }
 
-void receive_and_process_acks() {
+void receive_and_process_acks()
+{
     rte_mbuf* pkts[BURST_SIZE];
     uint16_t nb_rx = rte_eth_rx_burst(1, 0, pkts, BURST_SIZE);
 
-    for (uint16_t i = 0; i < nb_rx; i++) {
+    for (uint16_t i = 0; i < nb_rx; i++)
+    {
         sockaddr_in src, dst;
         void* payload = nullptr;
         size_t payload_length = 0;
@@ -412,45 +414,49 @@ void receive_and_process_acks() {
         uint16_t advertised_window = 0;
 
         int flow_id = parse_packet(&src, &dst, &payload, &payload_length, pkts[i], &ack_num, &advertised_window);
-        if (flow_id >= 0 && flow_id < MAX_FLOW_NUM) {
+        if (flow_id >= 0 && flow_id < MAX_FLOW_NUM)
+        {
             flow_state_sender* state = flow_table[flow_id];
 
             // Update the advertised window (in packets)
             state->advertised_window = advertised_window;
 
-            if (ack_num >= state->last_acked) {
+            if (ack_num >= state->last_acked)
+            {
                 // Process ACK
-                if (ack_num > state->last_acked) {
+                if (ack_num > state->last_acked)
+                {
                     // New ACK received
                     int acked_packets = ack_num - state->last_acked;
                     state->in_flight_packets -= acked_packets;
 
-                    while (!state->unacked_seq.empty() && state->unacked_seq.front() <= ack_num) {
+                    while (!state->unacked_seq.empty() && state->unacked_seq.front() <= ack_num)
+                    {
                         int seq = state->unacked_seq.front();
                         state->unacked_seq.pop();
                         rte_pktmbuf_free(state->unacked_packets[seq]);
                         state->unacked_packets.erase(seq);
                     }
                     state->last_acked = ack_num;
-                    }
                     // state->duplicate_acks = 0; // Reset duplicate ACK counter
-                // } else {
-                //     // Duplicate ACK received
-                //     state->duplicate_acks++;
-                //     if (state->duplicate_acks == 3) {
-                //         // Fast retransmit
-                //         // Retransmit the packet with sequence number last_acked + 1
-                //         // This part needs to be implemented
-                //     }
-                // }
+                    // } else {
+                    //     // Duplicate ACK received
+                    //     state->duplicate_acks++;
+                    //     if (state->duplicate_acks == 3) {
+                    //         // Fast retransmit
+                    //         // Retransmit the packet with sequence number last_acked + 1
+                    //         // This part needs to be implemented
+                    //     }
+                    // }
 
-                // Update the effective window (in packets)
-                state->effective_window = (state->advertised_window > state->in_flight_packets)
-                                          ? (state->advertised_window - state->in_flight_packets)
-                                          : 0;
+                    // Update the effective window (in packets)
+                    state->effective_window = (state->advertised_window > state->in_flight_packets)
+                                                  ? (state->advertised_window - state->in_flight_packets)
+                                                  : 0;
+                }
             }
+            rte_pktmbuf_free(pkts[i]);
         }
-        rte_pktmbuf_free(pkts[i]);
     }
 }
 
@@ -466,45 +472,51 @@ static void lcore_main()
     // Specify the dst mac address here:
 
     struct sliding_hdr* sld_h_ack;
-    // uint16_t nb_rx;
-    // uint64_t reqs = 0;
+    uint16_t nb_rx;
+    uint64_t reqs = 0;
     // uint64_t cycle_wait = intersend_time * rte_get_timer_hz() / (1e9);
 
     // TODO: add in scaffolding for timing/printing out quick statistics
     printf("flow num is %d\n", flow_num);
     int flow_id = 0;
-    while (true) {
-            // Send packets for all flows
-            for (flow_id = 0; flow_id < flow_num; flow_id++) {
-                send_packet(flow_id);
-            }
+    while (true)
+    {
+        // Send packets for all flows
+        for (flow_id = 0; flow_id < flow_num; flow_id++)
+        {
+            send_packet(flow_id);
+        }
 
-            // Receive and process ACKs
-            receive_and_process_acks();
+        // Receive and process ACKs
+        receive_and_process_acks();
 
-            // Check if all flows are complete
-            bool all_complete = true;
-            for (flow_id = 0; flow_id < flow_num; flow_id++) {
-                if (flow_table[flow_id]->last_written < NUM_PING - 1 || !flow_table[flow_id]->unacked_packets.empty()) {
-                    all_complete = false;
-                    break;
-                }
-            }
-            if (all_complete) {
+        // Check if all flows are complete
+        bool all_complete = true;
+        for (flow_id = 0; flow_id < flow_num; flow_id++)
+        {
+            if (flow_table[flow_id]->last_written < NUM_PING - 1 || !flow_table[flow_id]->unacked_packets.empty())
+            {
+                all_complete = false;
                 break;
             }
         }
+        if (all_complete)
+        {
+            break;
+        }
     }
-    // while (flow_table[flow_id]->last_written < NUM_PING)
-    // {
-    //     send_packet(flow_id);
-    //     printf("sent a packet!\n");
-    //     /* now poll on receiving packets */
-    //     receive(&nb_rx, pkts, flow_id);
-    //
-    //     flow_id = (flow_id + 1) % flow_num;
-    // }
-    // printf("Sent %" PRIu64 " packets.\n", reqs);
+}
+
+// while (flow_table[flow_id]->last_written < NUM_PING)
+// {
+//     send_packet(flow_id);
+//     printf("sent a packet!\n");
+//     /* now poll on receiving packets */
+//     receive(&nb_rx, pkts, flow_id);
+//
+//     flow_id = (flow_id + 1) % flow_num;
+// }
+// printf("Sent %" PRIu64 " packets.\n", reqs);
 
 /*
  * The main function, which does initialization and calls the per-lcore
