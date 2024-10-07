@@ -1,3 +1,5 @@
+
+
 /* SPDX-License-Identifier: BSD-3-Clause
  * Copyright(c) 2010-2015 Intel Corporation
  */
@@ -13,7 +15,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-
 #define RX_RING_SIZE 1024
 #define TX_RING_SIZE 1024
 
@@ -23,11 +24,14 @@
 #define MAX_FLOW_NUM 100
 #define PORT_NUM 5001
 #include "udp_header.h"
+#include "flowstate.h"
+
 struct rte_mempool *mbuf_pool = NULL;
 static struct rte_ether_addr my_eth;
 size_t window_len = 10;
+struct flow_state_receiver *flow_state;
 
-struct rte_ring *ack_ring;
+// struct rte_ring *ack_ring;
 
 int flow_size = 10000;
 int packet_len = 1000;
@@ -36,14 +40,8 @@ int flow_num = 1;
 using namespace std;
 const bool UNFINISHED = true;
 
-unordered_map<int, PortThreadQueue> port_queues;
-unordered_map<int, thread> port_threads;
-
-// predefine the flow state struct table for each flow here
-
-
-
-
+// unordered_map<int, PortThreadQueue> port_queues;
+// unordered_map<int, thread> port_threads;
 
 uint32_t
 checksum(unsigned char *buf, uint32_t nbytes, uint32_t sum) {
@@ -80,36 +78,36 @@ static uint64_t raw_time(void) {
 static uint64_t time_now(uint64_t offset) { return raw_time() - offset; }
 
 // define the packet data structure
-struct packet_data {
-    int udp_port_id;
-    struct rte_mbuf* pkt;
-};
+// struct packet_data {
+//     int udp_port_id;
+//     struct rte_mbuf* pkt;
+// };
 
 // Thread-safe queue for each port
-class PortThreadQueue {
-    queue<packet_data> queue_;
-    mutex mutex_;
-    condition_variable cond_var_;
+// class PortThreadQueue {
+//     queue<packet_data> queue_;
+//     mutex mutex_;
+//     condition_variable cond_var_;
 
-public:
-    // Add packet to the queue
-    void enqueue(packet_data pkt_data) {
-        lock_guard<mutex> lock(mutex_);
-        queue_.push(pkt_data);
-        cond_var_.notify_one();
-    }
+// public:
+//     // Add packet to the queue
+//     void enqueue(packet_data pkt_data) {
+//         lock_guard<mutex> lock(mutex_);
+//         queue_.push(pkt_data);
+//         cond_var_.notify_one();
+//     }
 
-    // Fetch packet from the queue
-    packet_data dequeue() {
-        unique_lock<mutex> lock(mutex_);
-        while (queue_.empty()) {
-            cond_var_.wait(lock);  // Wait until there's something in the queue
-        }
-        packet_data pkt_data = queue_.front();
-        queue_.pop();
-        return pkt_data;
-    }
-};
+//     // Fetch packet from the queue
+//     packet_data dequeue() {
+//         unique_lock<mutex> lock(mutex_);
+//         while (queue_.empty()) {
+//             cond_var_.wait(lock);  // Wait until there's something in the queue
+//         }
+//         packet_data pkt_data = queue_.front();
+//         queue_.pop();
+//         return pkt_data;
+//     }
+// };
 
 /*
  * Initializes a given port using global settings and with the RX buffers
@@ -218,10 +216,10 @@ static int get_port(struct sockaddr_in *src,
     rte_eth_macaddr_get(1, &mac_addr);
     if (!rte_is_same_ether_addr(&mac_addr, &eth_hdr->dst_addr)) {
         // printf("Bad MAC: %02" PRIx8 " %02" PRIx8 " %02" PRIx8
-        // 	   " %02" PRIx8 " %02" PRIx8 " %02" PRIx8 "\n",
+        //     " %02" PRIx8 " %02" PRIx8 " %02" PRIx8 "\n",
         //     eth_hdr->dst_addr.addr_bytes[0], eth_hdr->dst_addr.addr_bytes[1],
-        // 	eth_hdr->dst_addr.addr_bytes[2], eth_hdr->dst_addr.addr_bytes[3],
-        // 	eth_hdr->dst_addr.addr_bytes[4], eth_hdr->dst_addr.addr_bytes[5]);
+        //  eth_hdr->dst_addr.addr_bytes[2], eth_hdr->dst_addr.addr_bytes[3],
+        //  eth_hdr->dst_addr.addr_bytes[4], eth_hdr->dst_addr.addr_bytes[5]);
         return -1;
     }
     if (RTE_ETHER_TYPE_IPV4 != eth_type) {
@@ -273,7 +271,7 @@ static int get_port(struct sockaddr_in *src,
     // print the received time stamp in the payload
     // the data is uint64_t
     //print out
-    printf("Received timestamp: %" PRIu64 "\n", payload);
+    // printf("Received timestamp: %" PRIu64 "\n", payload);
     return ret;
 }
 
@@ -302,7 +300,7 @@ lcore_main(void) {
            rte_lcore_id());
 
     // wait for hand shake packet
-    while (init_connection(port) == UNFINISHED) {}
+    // while (init_connection(port) == UNFINISHED) {}
 
     /* Main work of application loop. 8< */
     for (;;) {
@@ -342,284 +340,329 @@ lcore_main(void) {
                 if (udp_port_id >= 0) {
                     printf("Received packet number %d\n", rec);
                     // process the packet concurrently by port_id
-                    packet_data pkt_data = {udp_port_id, pkt};
-                    if (port_queues.find(udp_port_id) != port_queues.end()) {
-                        port_queues[udp_port_id].enqueue(pkt_data);
-                    }
+                    // packet_data pkt_data = {udp_port_id, pkt};
+                    // if (port_queues.find(udp_port_id) != port_queues.end()) {
+                    //     port_queues[udp_port_id].enqueue(pkt_data);
+                    // }
                 }
 
-                // eth_h = rte_pktmbuf_mtod(pkt, struct rte_ether_hdr *);
-                // if (eth_h->ether_type != rte_be_to_cpu_16(RTE_ETHER_TYPE_IPV4)) {
-                //     rte_pktmbuf_free(pkt);
-                //     continue;
-                // }
+                eth_h = rte_pktmbuf_mtod(pkt, struct rte_ether_hdr *);
+                if (eth_h->ether_type != rte_be_to_cpu_16(RTE_ETHER_TYPE_IPV4)) {
+                    rte_pktmbuf_free(pkt);
+                    continue;
+                }
 
-                // ip_h = rte_pktmbuf_mtod_offset(pkt, struct rte_ipv4_hdr *,
-                //                                sizeof(struct rte_ether_hdr));
+                ip_h = rte_pktmbuf_mtod_offset(pkt, struct rte_ipv4_hdr *,
+                                               sizeof(struct rte_ether_hdr));
 
-                // udp_h = rte_pktmbuf_mtod_offset(pkt, struct udp_header_extra *,
-                //                                 sizeof(struct rte_ether_hdr) + sizeof(struct rte_ipv4_hdr));
+                udp_h = rte_pktmbuf_mtod_offset(pkt, struct udp_header_extra *,
+                                                sizeof(struct rte_ether_hdr) + sizeof(struct rte_ipv4_hdr));
+
+                // update flow state
+                flow_state->window_packets[udp_h->seq] = pkt;
+                flow_state->receive_times[udp_h->seq] = time_now(0);
+                flow_state->last_received = max(flow_state->last_received, udp_h->seq);
+
+                // check if the packet is in order
+                if (udp_h->seq == flow_state->next_seq_num_expected) {
+                    // update next_seq_num_expected
+                    flow_state->next_seq_num_expected = udp_h->seq + 1;
+
+                    while (flow_state->window_packets.count(flow_state->next_seq_num_expected) > 0) {
+                        flow_state->next_seq_num_expected++;
+                    }
+                } else {
+                    printf("Out of order packet received: expected %u, got %u\n",
+                        flow_state->next_seq_num_expected, udp_h->seq);
+                }
+                flow_state->advertised_window = WINDOW_SIZE - ((flow_state->next_seq_num_expected-1) - flow_state->last_read);
+                
+                printf("Updated advertised window: %u\n", flow_state->advertised_window);
                 // rte_pktmbuf_dump(stdout, pkt, pkt->pkt_len);
-                // // read the payload
-                // rec++;
+                // read the payload
+                rec++;
 
-                // // Construct and send Acks
-                // ack = rte_pktmbuf_alloc(mbuf_pool);
-                // if (ack == NULL) {
-                //     printf("Error allocating tx mbuf\n");
-                //     continue;
-                // }
-                // size_t header_size = 0;
+                // Construct and send Acks
+                ack = rte_pktmbuf_alloc(mbuf_pool);
+                if (ack == NULL) {
+                    printf("Error allocating tx mbuf\n");
+                    continue;
+                }
+                size_t header_size = 0;
 
-                // uint8_t *ptr = rte_pktmbuf_mtod(ack, uint8_t *);
-                // /* add in an ethernet header */
-                // eth_h_ack = (struct rte_ether_hdr *)ptr;
+                uint8_t *ptr = rte_pktmbuf_mtod(ack, uint8_t *);
+                /* add in an ethernet header */
+                eth_h_ack = (struct rte_ether_hdr *)ptr;
 
-                // rte_ether_addr_copy(&my_eth, &eth_h_ack->src_addr);
-                // rte_ether_addr_copy(&eth_h->src_addr, &eth_h_ack->dst_addr);
-                // eth_h_ack->ether_type = rte_be_to_cpu_16(RTE_ETHER_TYPE_IPV4);
-                // ptr += sizeof(*eth_h_ack);
-                // header_size += sizeof(*eth_h_ack);
+                rte_ether_addr_copy(&my_eth, &eth_h_ack->src_addr);
+                rte_ether_addr_copy(&eth_h->src_addr, &eth_h_ack->dst_addr);
+                eth_h_ack->ether_type = rte_be_to_cpu_16(RTE_ETHER_TYPE_IPV4);
+                ptr += sizeof(*eth_h_ack);
+                header_size += sizeof(*eth_h_ack);
 
-                // /* add in ipv4 header*/
-                // ip_h_ack = (struct rte_ipv4_hdr *)ptr;
-                // ip_h_ack->version_ihl = 0x45;
-                // ip_h_ack->type_of_service = 0x0;
-                // ip_h_ack->total_length = rte_cpu_to_be_16(sizeof(struct rte_ipv4_hdr) + sizeof(struct udp_header_extra) + ack_len);
-                // ip_h_ack->packet_id = rte_cpu_to_be_16(1);
-                // ip_h_ack->fragment_offset = 0;
-                // ip_h_ack->time_to_live = 64;
-                // ip_h_ack->next_proto_id = IPPROTO_UDP;
-                // ip_h_ack->src_addr = ip_h->dst_addr;
-                // ip_h_ack->dst_addr = ip_h->src_addr;
+                /* add in ipv4 header*/
+                ip_h_ack = (struct rte_ipv4_hdr *)ptr;
+                ip_h_ack->version_ihl = 0x45;
+                ip_h_ack->type_of_service = 0x0;
+                ip_h_ack->total_length = rte_cpu_to_be_16(sizeof(struct rte_ipv4_hdr) + sizeof(struct udp_header_extra) + ack_len);
+                ip_h_ack->packet_id = rte_cpu_to_be_16(1);
+                ip_h_ack->fragment_offset = 0;
+                ip_h_ack->time_to_live = 64;
+                ip_h_ack->next_proto_id = IPPROTO_UDP;
+                ip_h_ack->src_addr = ip_h->dst_addr;
+                ip_h_ack->dst_addr = ip_h->src_addr;
 
-                // uint32_t ipv4_checksum = wrapsum(checksum((unsigned char *)ip_h_ack, sizeof(struct rte_ipv4_hdr), 0));
-                // ip_h_ack->hdr_checksum = rte_cpu_to_be_32(ipv4_checksum);
-                // header_size += sizeof(*ip_h_ack);
-                // ptr += sizeof(*ip_h_ack);
-                // /* add in UDP hdr*/
-                // struct udp_header_extra * udp_h_ack_ext = (struct udp_header_extra *)ptr;
-                // udp_h_ack = &udp_h_ack_ext->udp_hdr;
-                // udp_h_ack->src_port = udp_h->udp_hdr.dst_port;
-                // udp_h_ack->dst_port = udp_h->udp_hdr.src_port;
-                // udp_h_ack->dgram_len = rte_cpu_to_be_16(sizeof(struct udp_header_extra) + ack_len);
-                // udp_h_ack_ext->window_size = 11451;
-                // printf("received window size is %d\n",udp_h->window_size);
-                // uint16_t udp_cksum = rte_ipv4_udptcp_cksum(ip_h_ack, (void *)udp_h_ack);
+                uint32_t ipv4_checksum = wrapsum(checksum((unsigned char *)ip_h_ack, sizeof(struct rte_ipv4_hdr), 0));
+                ip_h_ack->hdr_checksum = rte_cpu_to_be_32(ipv4_checksum);
+                header_size += sizeof(*ip_h_ack);
+                ptr += sizeof(*ip_h_ack);
+
+                /* add in UDP hdr*/
+                struct udp_header_extra * udp_h_ack_ext = (struct udp_header_extra *)ptr;
+                udp_h_ack = &udp_h_ack_ext->udp_hdr;
+                udp_h_ack->src_port = udp_h->udp_hdr.dst_port;
+                udp_h_ack->dst_port = udp_h->udp_hdr.src_port;
+                udp_h_ack->dgram_len = rte_cpu_to_be_16(sizeof(struct udp_header_extra) + ack_len);
+                udp_h_ack_ext->window_size = flow_state->advertised_window;
+                udp_h_ack_ext->seq = udp_h->seq;
+                // printf("packet transmission time is %" PRIu64 "\n", time_now(0) - udp_h_ack_ext->send_time);
+                udp_h_ack_ext->send_time = udp_h->send_time;
+                uint16_t udp_cksum = rte_ipv4_udptcp_cksum(ip_h_ack, (void *)udp_h_ack);
 
                 // printf("Udp checksum is %u\n", (unsigned)udp_cksum);
-                // udp_h_ack->dgram_cksum = rte_cpu_to_be_16(udp_cksum);
+                udp_h_ack->dgram_cksum = rte_cpu_to_be_16(udp_cksum);
 
-                // header_size += sizeof(*udp_h_ack_ext);
-                // ptr += sizeof(*udp_h_ack_ext);
-                // /* set the payload */
-                // memset(ptr, 'a', ack_len);
+                header_size += sizeof(*udp_h_ack_ext);
+                ptr += sizeof(*udp_h_ack_ext);
+                /* set the payload */
+                memset(ptr, 'a', ack_len);
 
-                // ack->l2_len = RTE_ETHER_HDR_LEN;
-                // ack->l3_len = sizeof(struct rte_ipv4_hdr);
-                // // pkt->ol_flags = PKT_TX_IP_CKSUM | PKT_TX_IPV4;
-                // ack->data_len = header_size + ack_len;
-                // ack->pkt_len = header_size + ack_len;
-                // ack->nb_segs = 1;
-                // int pkts_sent = 0;
+                ack->l2_len = RTE_ETHER_HDR_LEN;
+                ack->l3_len = sizeof(struct rte_ipv4_hdr);
+                // pkt->ol_flags = PKT_TX_IP_CKSUM | PKT_TX_IPV4;
+                ack->data_len = header_size + ack_len;
+                ack->pkt_len = header_size + ack_len;
+                ack->nb_segs = 1;
+                int pkts_sent = 0;
 
-                // unsigned char *ack_buffer = rte_pktmbuf_mtod(ack, unsigned char *);
-                // acks[nb_replies++] = ack;
+                unsigned char *ack_buffer = rte_pktmbuf_mtod(ack, unsigned char *);
+                acks[nb_replies++] = ack;
 
-                // rte_pktmbuf_free(bufs[i]);
+                // update flow state
+                flow_state->last_read = udp_h_ack_ext->seq;
+
+                rte_pktmbuf_free(bufs[i]);
             }
 
-            // wait for each thread to finish
-            for (auto& entry : port_threads) {
-                entry.second.join();
-            }
+            // // wait for each thread to finish
+            // for (auto& entry : port_threads) {
+            //     entry.second.join();
+            // }
 
-            /* Send back echo replies. */
-            uint16_t nb_tx = 0;
-            nb_replies = rte_ring_sc_dequeue_burst(ack_ring, (void **)acks, BURST_SIZE, NULL);
-            if (num_dequeued > 0) {
-                // Send back the ACKs to the client
-                nb_tx = rte_eth_tx_burst(port, 0, acks, nb_replies);
-            }
-
-            // Free any unsent ACKs
-            if (unlikely(nb_tx < nb_rx)) {
-                for (uint16_t i = nb_tx; i < nb_rx; i++) {
-                    rte_pktmbuf_free(acks[i]);
-                }
-            }
-            
+            // /* Send back echo replies. */
             // uint16_t nb_tx = 0;
+            // nb_replies = rte_ring_sc_dequeue_burst(ack_ring, (void **)acks, BURST_SIZE, NULL);
             // if (nb_replies > 0) {
+            //     // Send back the ACKs to the client
             //     nb_tx = rte_eth_tx_burst(port, 0, acks, nb_replies);
             // }
 
-            // /* Free any unsent packets. */
+            // // Free any unsent ACKs
             // if (unlikely(nb_tx < nb_rx)) {
-            //     uint16_t buf;
-            //     for (buf = nb_tx; buf < nb_rx; buf++)
-            //         rte_pktmbuf_free(acks[buf]);
+            //     for (uint16_t i = nb_tx; i < nb_rx; i++) {
+            //         rte_pktmbuf_free(acks[i]);
+            //     }
             // }
+            
+            uint16_t nb_tx = 0;
+            if (nb_replies > 0) {
+                nb_tx = rte_eth_tx_burst(port, 0, acks, nb_replies);
+            }
+
+            /* Free any unsent packets. */
+            if (unlikely(nb_tx < nb_rx)) {
+                uint16_t buf;
+                for (buf = nb_tx; buf < nb_rx; buf++)
+                    rte_pktmbuf_free(acks[buf]);
+            }
 
         }
     }
     /* >8 End of loop. */
 }
 
-bool init_connection(uint16_t port) {
-    RTE_ETH_FOREACH_DEV(port) {
-        if (port != 1) return true;
-    }
+// bool init_connection(uint16_t port) {
+//     RTE_ETH_FOREACH_DEV(port) {
+//         if (port != 1) return true;
+//     }
 
-    struct rte_mbuf *bufs[BURST_SIZE];
-    struct rte_mbuf *pkt;
-    struct rte_ether_hdr *eth_h;
-    struct rte_ipv4_hdr *ip_h;
-    struct udp_header_extra *udp_h;
-    struct rte_ether_addr eth_addr;
-    uint32_t ip_addr;
-    uint8_t i;
-    // char *buf_ptr;
-    struct rte_ether_hdr *eth_h_ack;
-    struct rte_ipv4_hdr *ip_h_ack;
-    struct rte_udp_hdr *udp_h_ack;
+//     struct rte_mbuf *bufs[BURST_SIZE];
+//     struct rte_mbuf *pkt;
+//     struct rte_ether_hdr *eth_h;
+//     struct rte_ipv4_hdr *ip_h;
+//     struct udp_header_extra *udp_h;
+//     struct rte_ether_addr eth_addr;
+//     uint32_t ip_addr;
+//     uint8_t i;
+//     // char *buf_ptr;
+//     struct rte_ether_hdr *eth_h_ack;
+//     struct rte_ipv4_hdr *ip_h_ack;
+//     struct rte_udp_hdr *udp_h_ack;
 
-    const uint16_t nb_rx = rte_eth_rx_burst(port, 0, bufs, BURST_SIZE);
+//     const uint16_t nb_rx = rte_eth_rx_burst(port, 0, bufs, BURST_SIZE);
 
-    if (unlikely(nb_rx != 1)) {
-        printf("Received %d packets during hand shake\n", nb_rx);
-        return UNFINISHED;
-    }
+//     if (unlikely(nb_rx != 1)) {
+//         printf("Received %d packets during hand shake\n", nb_rx);
+//         return UNFINISHED;
+//     }
 
-    for (i = 0; i < nb_rx; i++) {
-        pkt = bufs[i];
-        struct sockaddr_in src, dst;
-        void *payload = NULL;
-        size_t payload_length = 0;
-        int udp_port_id = get_port(&src, &dst, &payload, &payload_length, pkt);
+//     for (i = 0; i < nb_rx; i++) {
+//         pkt = bufs[i];
+//         struct sockaddr_in src, dst;
+//         void *payload = NULL;
+//         size_t payload_length = 0;
+//         int udp_port_id = get_port(&src, &dst, &payload, &payload_length, pkt);
         
-    }
+//     }
 
-    eth_h = rte_pktmbuf_mtod(pkt, struct rte_ether_hdr *);
-    if (eth_h->ether_type != rte_be_to_cpu_16(RTE_ETHER_TYPE_IPV4)) {
-        rte_pktmbuf_free(pkt);
-        return UNFINISHED;
-    }
+//     eth_h = rte_pktmbuf_mtod(pkt, struct rte_ether_hdr *);
+//     if (eth_h->ether_type != rte_be_to_cpu_16(RTE_ETHER_TYPE_IPV4)) {
+//         rte_pktmbuf_free(pkt);
+//         return UNFINISHED;
+//     }
 
-    ip_h = rte_pktmbuf_mtod_offset(pkt, struct rte_ipv4_hdr *,
-                                               sizeof(struct rte_ether_hdr));
+//     ip_h = rte_pktmbuf_mtod_offset(pkt, struct rte_ipv4_hdr *,
+//                                                sizeof(struct rte_ether_hdr));
 
-    udp_h = rte_pktmbuf_mtod_offset(pkt, struct udp_header_extra *,
-                                                sizeof(struct rte_ether_hdr) + sizeof(struct rte_ipv4_hdr));
+//     udp_h = rte_pktmbuf_mtod_offset(pkt, struct udp_header_extra *,
+//                                                 sizeof(struct rte_ether_hdr) + sizeof(struct rte_ipv4_hdr));
     
-    // check if the packet is a hand shake packet
-    u_int64_t num_flow = udp_h->window_size;
-    if (num_flow == 0) {
-        rte_pktmbuf_free(pkt);
-        return UNFINISHED;
-    }
+//     // check if the packet is a hand shake packet
+//     u_int64_t num_flow = udp_h->window_size;
+//     if (num_flow == 0) {
+//         rte_pktmbuf_free(pkt);
+//         return UNFINISHED;
+//     }
 
-    // construct thread queue for each port
-    for (int port_id=1; port_id <= num_flow; port_id++) {
-        // Create queue for each port
-        port_queues[port_id] = PortThreadQueue();  
-        port_threads[port_id] = thread(process_packets, ref(port_queues[port_id]), port_id); 
-    }
-}
+    // // construct thread queue for each port
+    // for (int port_id=1; port_id <= num_flow; port_id++) {
+    //     // Create queue for each port
+    //     port_queues[port_id] = PortThreadQueue();  
+    //     port_threads[port_id] = thread(process_packets, ref(port_queues[port_id]), port_id); 
+    // }
+// }
 
 // process the packet and fill in the ack
-void process_packets(PortThreadQueue& queue, int port_id) {
-    while (true) {
-        packet_data pkt_data = queue.dequeue();  // Get the packet from the queue
-        if (pkt_data.udp_port_id == port_id) {
-            printf("Processing packet for port %d\n", port_id);
-            struct rte_mbuf *pkt = pkt_data.pkt;
-            eth_h = rte_pktmbuf_mtod(pkt, struct rte_ether_hdr *);
-            if (eth_h->ether_type != rte_be_to_cpu_16(RTE_ETHER_TYPE_IPV4)) {
-                rte_pktmbuf_free(pkt);
-                continue;
-            }
-
-            ip_h = rte_pktmbuf_mtod_offset(pkt, struct rte_ipv4_hdr *,
-                                            sizeof(struct rte_ether_hdr));
-
-            udp_h = rte_pktmbuf_mtod_offset(pkt, struct udp_header_extra *,
-                                            sizeof(struct rte_ether_hdr) + sizeof(struct rte_ipv4_hdr));
-            // rte_pktmbuf_dump(stdout, pkt, pkt->pkt_len);
-            // read the payload
-            rec++;
-
-            // Construct and send Acks
-            struct rte_mbuf *ack = rte_pktmbuf_alloc(mbuf_pool);
-            if (ack == NULL) {
-                printf("Error allocating tx mbuf at port %d\n", port_id);
-                continue;
-            }
-            size_t header_size = 0;
-
-            uint8_t *ptr = rte_pktmbuf_mtod(ack, uint8_t *);
-            /* add in an ethernet header */
-            eth_h_ack = (struct rte_ether_hdr *)ptr;
-
-            rte_ether_addr_copy(&my_eth, &eth_h_ack->src_addr);
-            rte_ether_addr_copy(&eth_h->src_addr, &eth_h_ack->dst_addr);
-            eth_h_ack->ether_type = rte_be_to_cpu_16(RTE_ETHER_TYPE_IPV4);
-            ptr += sizeof(*eth_h_ack);
-            header_size += sizeof(*eth_h_ack);
-
-            /* add in ipv4 header*/
-            ip_h_ack = (struct rte_ipv4_hdr *)ptr;
-            ip_h_ack->version_ihl = 0x45;
-            ip_h_ack->type_of_service = 0x0;
-            ip_h_ack->total_length = rte_cpu_to_be_16(sizeof(struct rte_ipv4_hdr) + sizeof(struct udp_header_extra) + ack_len);
-            ip_h_ack->packet_id = rte_cpu_to_be_16(1);
-            ip_h_ack->fragment_offset = 0;
-            ip_h_ack->time_to_live = 64;
-            ip_h_ack->next_proto_id = IPPROTO_UDP;
-            ip_h_ack->src_addr = ip_h->dst_addr;
-            ip_h_ack->dst_addr = ip_h->src_addr;
-
-            uint32_t ipv4_checksum = wrapsum(checksum((unsigned char *)ip_h_ack, sizeof(struct rte_ipv4_hdr), 0));
-            ip_h_ack->hdr_checksum = rte_cpu_to_be_32(ipv4_checksum);
-            header_size += sizeof(*ip_h_ack);
-            ptr += sizeof(*ip_h_ack);
-
-            /* add in udp header*/
-            struct udp_header_extra * udp_h_ack_ext = (struct udp_header_extra *)ptr;
-            udp_h_ack = &udp_h_ack_ext->udp_hdr;
-            udp_h_ack->src_port = udp_h->udp_hdr.dst_port;
-            udp_h_ack->dst_port = udp_h->udp_hdr.src_port;
-            udp_h_ack->dgram_len = rte_cpu_to_be_16(sizeof(struct udp_header_extra) + ack_len);
-            udp_h_ack_ext->window_size = ???????;
-            udp_h_ack_ext->seq = udp_h->seq;
-            printf("packet transmission time is %" PRIu64 "\n", time_now(0) - udp_h_ack_seq->send_time);
-            udp_h_ack_ext->send_time = udp_h->send_time;
+// void process_packets(PortThreadQueue& queue, int port_id) {
+//     while (true) {
+//         packet_data pkt_data = queue.dequeue();  // Get the packet from the queue
+//         if (pkt_data.udp_port_id == port_id) {
+//             printf("Processing packet for port %d\n", port_id);
+//             struct rte_mbuf *pkt = pkt_data.pkt;
+//             struct rte_ether_hdr *eth_h;
+//             struct rte_ipv4_hdr *ip_h;
+//             struct udp_header_extra *udp_h;
             
-            uint16_t udp_cksum = rte_ipv4_udptcp_cksum(ip_h_ack, (void *)udp_h_ack);
-            udp_h_ack->dgram_cksum = rte_cpu_to_be_16(udp_cksum);
 
-            header_size += sizeof(*udp_h_ack_ext);
-            ptr += sizeof(*udp_h_ack_ext);
-            /* set the payload */
-            memset(ptr, 'a', ack_len);
+//             eth_h = rte_pktmbuf_mtod(pkt, struct rte_ether_hdr *);
+//             if (eth_h->ether_type != rte_be_to_cpu_16(RTE_ETHER_TYPE_IPV4)) {
+//                 rte_pktmbuf_free(pkt);
+//                 continue;
+//             }
 
-            ack->l2_len = RTE_ETHER_HDR_LEN;
-            ack->l3_len = sizeof(struct rte_ipv4_hdr);
-            // pkt->ol_flags = PKT_TX_IP_CKSUM | PKT_TX_IPV4;
-            ack->data_len = header_size + ack_len;
-            ack->pkt_len = header_size + ack_len;
-            ack->nb_segs = 1;
+//             ip_h = rte_pktmbuf_mtod_offset(pkt, struct rte_ipv4_hdr *,
+//                                             sizeof(struct rte_ether_hdr));
 
-            // unsigned char *ack_buffer = rte_pktmbuf_mtod(ack, unsigned char *);
-            // Enqueue the ACK in the global ack_ring
-            if (rte_ring_sp_enqueue(ack_ring, ack) < 0) {
-                printf("Error: Failed to enqueue ACK\n");
-                rte_pktmbuf_free(ack);  // Free if enqueue fails
-            } 
-        }
-    }
-}
+//             udp_h = rte_pktmbuf_mtod_offset(pkt, struct udp_header_extra *,
+//                                             sizeof(struct rte_ether_hdr) + sizeof(struct rte_ipv4_hdr));
+//             // rte_pktmbuf_dump(stdout, pkt, pkt->pkt_len);
+//             // read the payload
+//             rec++;
+
+//             // Construct and send Acks
+//             struct rte_mbuf *ack = rte_pktmbuf_alloc(mbuf_pool);
+//             if (ack == NULL) {
+//                 printf("Error allocating tx mbuf at port %d\n", port_id);
+//                 continue;
+//             }
+//             size_t header_size = 0;
+
+//             uint8_t *ptr = rte_pktmbuf_mtod(ack, uint8_t *);
+//             /* add in an ethernet header */
+//             eth_h_ack = (struct rte_ether_hdr *)ptr;
+
+//             rte_ether_addr_copy(&my_eth, &eth_h_ack->src_addr);
+//             rte_ether_addr_copy(&eth_h->src_addr, &eth_h_ack->dst_addr);
+//             eth_h_ack->ether_type = rte_be_to_cpu_16(RTE_ETHER_TYPE_IPV4);
+//             ptr += sizeof(*eth_h_ack);
+//             header_size += sizeof(*eth_h_ack);
+
+//             /* add in ipv4 header*/
+//             ip_h_ack = (struct rte_ipv4_hdr *)ptr;
+//             ip_h_ack->version_ihl = 0x45;
+//             ip_h_ack->type_of_service = 0x0;
+//             ip_h_ack->total_length = rte_cpu_to_be_16(sizeof(struct rte_ipv4_hdr) + sizeof(struct udp_header_extra) + ack_len);
+//             ip_h_ack->packet_id = rte_cpu_to_be_16(1);
+//             ip_h_ack->fragment_offset = 0;
+//             ip_h_ack->time_to_live = 64;
+//             ip_h_ack->next_proto_id = IPPROTO_UDP;
+//             ip_h_ack->src_addr = ip_h->dst_addr;
+//             ip_h_ack->dst_addr = ip_h->src_addr;
+
+//             uint32_t ipv4_checksum = wrapsum(checksum((unsigned char *)ip_h_ack, sizeof(struct rte_ipv4_hdr), 0));
+//             ip_h_ack->hdr_checksum = rte_cpu_to_be_32(ipv4_checksum);
+//             header_size += sizeof(*ip_h_ack);
+//             ptr += sizeof(*ip_h_ack);
+
+//             /* add in udp header*/
+//             struct udp_header_extra * udp_h_ack_ext = (struct udp_header_extra *)ptr;
+//             udp_h_ack = &udp_h_ack_ext->udp_hdr;
+//             udp_h_ack->src_port = udp_h->udp_hdr.dst_port;
+//             udp_h_ack->dst_port = udp_h->udp_hdr.src_port;
+//             udp_h_ack->dgram_len = rte_cpu_to_be_16(sizeof(struct udp_header_extra) + ack_len);
+//             udp_h_ack_ext->window_size = ???????;
+//             udp_h_ack_ext->seq = udp_h->seq;
+//             printf("packet transmission time is %" PRIu64 "\n", time_now(0) - udp_h_ack_seq->send_time);
+//             udp_h_ack_ext->send_time = udp_h->send_time;
+            
+//             uint16_t udp_cksum = rte_ipv4_udptcp_cksum(ip_h_ack, (void *)udp_h_ack);
+//             udp_h_ack->dgram_cksum = rte_cpu_to_be_16(udp_cksum);
+
+//             header_size += sizeof(*udp_h_ack_ext);
+//             ptr += sizeof(*udp_h_ack_ext);
+//             /* set the payload */
+//             memset(ptr, 'a', ack_len);
+
+//             ack->l2_len = RTE_ETHER_HDR_LEN;
+//             ack->l3_len = sizeof(struct rte_ipv4_hdr);
+//             // pkt->ol_flags = PKT_TX_IP_CKSUM | PKT_TX_IPV4;
+//             ack->data_len = header_size + ack_len;
+//             ack->pkt_len = header_size + ack_len;
+//             ack->nb_segs = 1;
+
+//             // unsigned char *ack_buffer = rte_pktmbuf_mtod(ack, unsigned char *);
+//             // Enqueue the ACK in the global ack_ring
+//             if (rte_ring_sp_enqueue(ack_ring, ack) < 0) {
+//                 printf("Error: Failed to enqueue ACK\n");
+//                 rte_pktmbuf_free(ack);  // Free if enqueue fails
+//             } 
+//         }
+//     }
+// }
 /* >8 End Basic forwarding application lcore. */
+
+
+void init_flow_state() {
+    flow_state = new flow_state_receiver();
+    if (flow_state == NULL) {
+        printf("Error allocating flow state\n");
+        return;
+    }
+    flow_state->next_seq_num_expected = 0; 
+    flow_state->advertised_window = WINDOW_SIZE; // Initial window size
+    flow_state->last_read = 0; 
+    flow_state->last_received = 0; 
+}
 
 /*
  * The main function, which does initialization and calls the per-lcore
@@ -659,9 +702,12 @@ int main(int argc, char *argv[]) {
     if (rte_lcore_count() > 1)
         printf("\nWARNING: Too many lcores enabled. Only 1 used.\n");
 
-    ack_ring = rte_ring_create("ACK_RING", BURST_SIZE, rte_socket_id(), RING_F_SP_ENQ | RING_F_SC_DEQ);
-    if (ack_ring == NULL)
-        rte_exit(EXIT_FAILURE, "Error creating ACK ring\n");
+    /* Initializing flow table*/
+    init_flow_state();
+
+    // ack_ring = rte_ring_create("ACK_RING", BURST_SIZE, rte_socket_id(), RING_F_SP_ENQ | RING_F_SC_DEQ);
+    // if (ack_ring == NULL)
+    //     rte_exit(EXIT_FAILURE, "Error creating ACK ring\n");
 
     /* Call lcore_main on the main core only. Called on single lcore. 8< */
     lcore_main();
