@@ -31,6 +31,12 @@ int packet_len = 1000;
 int ack_len = 10;
 int flow_num = 1;
 
+// predefine the flow state struct table for each flow here
+
+
+
+
+
 uint32_t
 checksum(unsigned char *buf, uint32_t nbytes, uint32_t sum) {
     unsigned int i;

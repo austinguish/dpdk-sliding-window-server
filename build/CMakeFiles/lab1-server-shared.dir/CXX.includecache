@@ -1,0 +1,36 @@
+#IncludeRegexLine: ^[ 	]*[#%][ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+/home/tianyi/Server/lab1-server.cpp
+inttypes.h
+-
+rte_cycles.h
+-
+rte_eal.h
+-
+rte_ethdev.h
+-
+rte_lcore.h
+-
+rte_mbuf.h
+-
+stdbool.h
+-
+stdint.h
+-
+stdio.h
+-
+stdlib.h
+-
+udp_header.h
+/home/tianyi/Server/udp_header.h
+
+/home/tianyi/Server/udp_header.h
+rte_udp.h
+-
+
