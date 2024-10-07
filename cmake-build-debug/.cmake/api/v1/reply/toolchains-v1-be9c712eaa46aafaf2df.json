@@ -10,6 +10,9 @@
 				{
 					"includeDirectories" : 
 					[
+						"/usr/include/c++/9",
+						"/usr/include/x86_64-linux-gnu/c++/9",
+						"/usr/include/c++/9/backward",
 						"/usr/lib/gcc/x86_64-linux-gnu/9/include",
 						"/usr/local/include",
 						"/usr/include/x86_64-linux-gnu",
@@ -26,21 +29,36 @@
 					"linkFrameworkDirectories" : [],
 					"linkLibraries" : 
 					[
-						"gcc",
+						"stdc++",
+						"m",
 						"gcc_s",
-						"c",
 						"gcc",
-						"gcc_s"
+						"c",
+						"gcc_s",
+						"gcc"
 					]
 				},
-				"path" : "/usr/bin/cc",
+				"path" : "/usr/bin/c++",
 				"version" : "9.4.0"
 			},
-			"language" : "C",
+			"language" : "CXX",
 			"sourceFileExtensions" : 
 			[
-				"c",
-				"m"
+				"C",
+				"M",
+				"c++",
+				"cc",
+				"cpp",
+				"cxx",
+				"m",
+				"mm",
+				"mpp",
+				"CPP",
+				"ixx",
+				"cppm",
+				"ccm",
+				"cxxm",
+				"c++m"
 			]
 		}
 	],

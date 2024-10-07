@@ -1,15 +1,19 @@
 cmake_minimum_required(VERSION 3.10)
-project(lab1 C)
+project(lab1 CXX)
 
 # Set the binary names
 set(SERVER_NAME lab1-server)
 set(CLIENT_NAME lab1-client)
-
+set(CMAKE_CXX_STANDARD 11)  # 或者设置为 CMAKE_CXX_STANDARD 14、17 等
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+set(CMAKE_CXX_EXTENSIONS OFF)  # 不使用扩展
 # Source files
-set(SERVER_SOURCES lab1-server.c
-        flowstate.h)
-set(CLIENT_SOURCES lab1-client.c
-        flowstate.h)
+set(SERVER_SOURCES lab1-server.cpp
+        flowstate.h
+)
+set(CLIENT_SOURCES lab1-client.cpp
+        flowstate.h
+)
 
 # Find DPDK package
 find_package(PkgConfig REQUIRED)
@@ -20,17 +24,20 @@ endif()
 
 # Add executable targets
 add_executable(${SERVER_NAME}-shared ${SERVER_SOURCES} udp_header.h
-        flowstate.h)
+        flowstate.h
+)
 add_executable(${SERVER_NAME}-static ${SERVER_SOURCES}
-        flowstate.h)
+        flowstate.h
+)
 add_executable(${CLIENT_NAME}-shared ${CLIENT_SOURCES}
-        flowstate.h)
+        flowstate.h
+)
 
 # Set compile options
-set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Og -DALLOW_EXPERIMENTAL_API")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Og -DALLOW_EXPERIMENTAL_API -mssse3")
 
 # Enable SIMD instructions
-set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -march=native -mtune=native")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -march=native -mtune=native -mssse3")
 
 # Include directories
 target_include_directories(${SERVER_NAME}-shared PRIVATE ${DPDK_INCLUDE_DIRS})

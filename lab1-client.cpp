@@ -62,16 +62,14 @@ void init_flow_table()
 {
     for (int i = 0; i < flow_num; i++)
     {
-        flow_table[i] = malloc(sizeof(struct flow_state_sender));
+        flow_table[i] = (struct flow_state_sender*)malloc(sizeof(struct flow_state_sender));
         struct flow_state_sender* sender = flow_table[i];
         sender->next_seq_num = -1;
         sender->effective_window = window_len;
         sender->last_acked = -1;
         sender->last_written = -1;
-        // use rte ring to store the unacked packets
-        char ring_name[20];
-        sprintf(ring_name, "flow_ring_%d", i);
-        sender->window_packets= rte_ring_create(ring_name, window_len, rte_socket_id(), RING_F_SP_ENQ | RING_F_SC_DEQ);
+        // use std map to store the unacked packets
+        sender->unacked_packets = std::map<int, struct rte_mbuf*>();
         // save the pointer to the flow state table
     }
 }
@@ -93,7 +91,7 @@ uint32_t checksum(unsigned char* buf, uint32_t nbytes, uint32_t sum)
     /* Checksum all the pairs of bytes first. */
     for (i = 0; i < (nbytes & ~1U); i += 2)
     {
-        sum += (uint16_t)ntohs(*((uint16_t *)(buf + i)));
+        sum += (uint16_t)ntohs(*((uint16_t*)(buf + i)));
         if (sum > 0xFFFF)
             sum -= 0xFFFF;
     }
@@ -116,7 +114,7 @@ uint32_t wrapsum(uint32_t sum)
 
 static int parse_packet(struct sockaddr_in* src, struct sockaddr_in* dst,
                         void** payload, size_t* payload_len,
-                        struct rte_mbuf* pkt)
+                        struct rte_mbuf* pkt, int* ack_num)
 {
     // packet layout order is (from outside -> in):
     // ether_hdr
@@ -178,6 +176,8 @@ static int parse_packet(struct sockaddr_in* src, struct sockaddr_in* dst,
     // In network byte order.
     in_port_t udp_src_port = udp_hdr_ext->udp_hdr.src_port;
     in_port_t udp_dst_port = udp_hdr_ext->udp_hdr.dst_port;
+    // set the ack number
+    *ack_num = udp_hdr_ext->seq;
 
     int ret = rte_be_to_cpu_16(udp_hdr_ext->udp_hdr.dst_port) - PORT_NUM;
     if (ret < 0 || ret >= MAX_FLOW_NUM)
@@ -367,11 +367,9 @@ static void send_packet(struct rte_mbuf* pkt, struct rte_ether_hdr* eth_hdr, str
     pkts_sent = rte_eth_tx_burst(1, 0, &pkt, 1);
     if (pkts_sent == 1)
     {
-        // seq[port_id]++;
+        // add the packet to the unacked map
+        flow_table[port_id]->unacked_packets[flow_table[port_id]->next_seq_num] = pkt;
         flow_table[port_id]->next_seq_num++;
-        // outstanding[port_id]++;
-        // add the packet to the window rte ring
-        rte_ring_enqueue(flow_table[port_id]->window_packets, pkt);
         // also increase the last written
         flow_table[port_id]->last_written++;
     }
@@ -382,8 +380,8 @@ static void send_packet(struct rte_mbuf* pkt, struct rte_ether_hdr* eth_hdr, str
 static void receive(uint16_t* nb_rx, struct rte_mbuf** pkts, size_t port_id)
 {
     *nb_rx = 0;
-    // while the the unacked queue(rte_ring) is not empty
-    while (rte_ring_count(flow_table[port_id]->window_packets) > 0)
+    // while the the unacked map is not empty
+    while (flow_table[port_id]->unacked_packets.size() > 0)
     {
         *nb_rx = rte_eth_rx_burst(1, 0, pkts, BURST_SIZE);
         if (*nb_rx == 0)
@@ -391,15 +389,22 @@ static void receive(uint16_t* nb_rx, struct rte_mbuf** pkts, size_t port_id)
             continue;
         }
 
-        printf("Received burst of %u\n", (unsigned)nb_rx);
+        // // printf("Received burst of %u\n", (unsigned)*nb_rx);
+        // // use cpp style convert to get the packet
+        // std::cout<<"received a packet!"<<std::endl;
         for (uint16_t i = 0; i < *nb_rx; i++)
         {
             struct sockaddr_in src, dst;
             void* payload = NULL;
             size_t payload_length = 0;
-            int p = parse_packet(&src, &dst, &payload, &payload_length, pkts[i]);
+            int ack_num = 0;
+            int p = parse_packet(&src, &dst, &payload, &payload_length, pkts[i], &ack_num);
             if (p >= 0)
-                outstanding[p]--;
+            {
+                flow_table[p]->last_acked = ack_num;
+                flow_table[p]->unacked_packets.erase(ack_num);
+            }
+
 
             rte_pktmbuf_free(pkts[i]);
         }
@@ -428,7 +433,7 @@ static void lcore_main()
     printf("flow num is %d\n", flow_num);
     size_t flow_id = 0;
 
-    while (flow_table[flow_id]->next_seq_num< NUM_PING)
+    while (flow_table[flow_id]->next_seq_num < NUM_PING)
     {
         send_packet(pkt, eth_hdr, dst, ipv4_hdr, flow_id);
         printf("sent a packet!\n");
