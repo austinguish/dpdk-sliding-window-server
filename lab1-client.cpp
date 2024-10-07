@@ -59,7 +59,7 @@ struct flow_state_sender* flow_table[MAX_FLOW_NUM];
 //    // last written to the window
 //    uint16_t last_written; // last packet send to window
 
-const rte_ether_addr dst = {{0x14, 0x58, 0xD0, 0x58, 0xee, 0xa3}};
+const rte_ether_addr dst = {{0x14, 0x58, 0xD0, 0x58, 0xdf, 0x43}};
 
 void init_flow_table()
 {
