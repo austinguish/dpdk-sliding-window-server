@@ -48,10 +48,10 @@ RM = /usr/bin/cmake -E remove -f
 EQUALS = =
 
 # The top-level source directory on which CMake was run.
-CMAKE_SOURCE_DIR = /users/jiangyw/Server
+CMAKE_SOURCE_DIR = /home/tianyi/Server
 
 # The top-level build directory on which CMake was run.
-CMAKE_BINARY_DIR = /users/jiangyw/Server/build
+CMAKE_BINARY_DIR = /home/tianyi/Server/build
 
 #=============================================================================
 # Targets provided globally by CMake.
@@ -126,9 +126,9 @@ rebuild_cache/fast: rebuild_cache
 
 # The main all target
 all: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /users/jiangyw/Server/build/CMakeFiles /users/jiangyw/Server/build/CMakeFiles/progress.marks
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/tianyi/Server/build/CMakeFiles /home/tianyi/Server/build/CMakeFiles/progress.marks
 	$(MAKE) -f CMakeFiles/Makefile2 all
-	$(CMAKE_COMMAND) -E cmake_progress_start /users/jiangyw/Server/build/CMakeFiles 0
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/tianyi/Server/build/CMakeFiles 0
 .PHONY : all
 
 # The main clean target
@@ -208,62 +208,62 @@ lab1-server-shared/fast:
 	$(MAKE) -f CMakeFiles/lab1-server-shared.dir/build.make CMakeFiles/lab1-server-shared.dir/build
 .PHONY : lab1-server-shared/fast
 
-lab1-client.o: lab1-client.c.o
+lab1-client.o: lab1-client.cpp.o
 
 .PHONY : lab1-client.o
 
 # target to build an object file
-lab1-client.c.o:
-	$(MAKE) -f CMakeFiles/lab1-client-shared.dir/build.make CMakeFiles/lab1-client-shared.dir/lab1-client.c.o
-.PHONY : lab1-client.c.o
+lab1-client.cpp.o:
+	$(MAKE) -f CMakeFiles/lab1-client-shared.dir/build.make CMakeFiles/lab1-client-shared.dir/lab1-client.cpp.o
+.PHONY : lab1-client.cpp.o
 
-lab1-client.i: lab1-client.c.i
+lab1-client.i: lab1-client.cpp.i
 
 .PHONY : lab1-client.i
 
 # target to preprocess a source file
-lab1-client.c.i:
-	$(MAKE) -f CMakeFiles/lab1-client-shared.dir/build.make CMakeFiles/lab1-client-shared.dir/lab1-client.c.i
-.PHONY : lab1-client.c.i
+lab1-client.cpp.i:
+	$(MAKE) -f CMakeFiles/lab1-client-shared.dir/build.make CMakeFiles/lab1-client-shared.dir/lab1-client.cpp.i
+.PHONY : lab1-client.cpp.i
 
-lab1-client.s: lab1-client.c.s
+lab1-client.s: lab1-client.cpp.s
 
 .PHONY : lab1-client.s
 
 # target to generate assembly for a file
-lab1-client.c.s:
-	$(MAKE) -f CMakeFiles/lab1-client-shared.dir/build.make CMakeFiles/lab1-client-shared.dir/lab1-client.c.s
-.PHONY : lab1-client.c.s
+lab1-client.cpp.s:
+	$(MAKE) -f CMakeFiles/lab1-client-shared.dir/build.make CMakeFiles/lab1-client-shared.dir/lab1-client.cpp.s
+.PHONY : lab1-client.cpp.s
 
-lab1-server.o: lab1-server.c.o
+lab1-server.o: lab1-server.cpp.o
 
 .PHONY : lab1-server.o
 
 # target to build an object file
-lab1-server.c.o:
-	$(MAKE) -f CMakeFiles/lab1-server-static.dir/build.make CMakeFiles/lab1-server-static.dir/lab1-server.c.o
-	$(MAKE) -f CMakeFiles/lab1-server-shared.dir/build.make CMakeFiles/lab1-server-shared.dir/lab1-server.c.o
-.PHONY : lab1-server.c.o
+lab1-server.cpp.o:
+	$(MAKE) -f CMakeFiles/lab1-server-static.dir/build.make CMakeFiles/lab1-server-static.dir/lab1-server.cpp.o
+	$(MAKE) -f CMakeFiles/lab1-server-shared.dir/build.make CMakeFiles/lab1-server-shared.dir/lab1-server.cpp.o
+.PHONY : lab1-server.cpp.o
 
-lab1-server.i: lab1-server.c.i
+lab1-server.i: lab1-server.cpp.i
 
 .PHONY : lab1-server.i
 
 # target to preprocess a source file
-lab1-server.c.i:
-	$(MAKE) -f CMakeFiles/lab1-server-static.dir/build.make CMakeFiles/lab1-server-static.dir/lab1-server.c.i
-	$(MAKE) -f CMakeFiles/lab1-server-shared.dir/build.make CMakeFiles/lab1-server-shared.dir/lab1-server.c.i
-.PHONY : lab1-server.c.i
+lab1-server.cpp.i:
+	$(MAKE) -f CMakeFiles/lab1-server-static.dir/build.make CMakeFiles/lab1-server-static.dir/lab1-server.cpp.i
+	$(MAKE) -f CMakeFiles/lab1-server-shared.dir/build.make CMakeFiles/lab1-server-shared.dir/lab1-server.cpp.i
+.PHONY : lab1-server.cpp.i
 
-lab1-server.s: lab1-server.c.s
+lab1-server.s: lab1-server.cpp.s
 
 .PHONY : lab1-server.s
 
 # target to generate assembly for a file
-lab1-server.c.s:
-	$(MAKE) -f CMakeFiles/lab1-server-static.dir/build.make CMakeFiles/lab1-server-static.dir/lab1-server.c.s
-	$(MAKE) -f CMakeFiles/lab1-server-shared.dir/build.make CMakeFiles/lab1-server-shared.dir/lab1-server.c.s
-.PHONY : lab1-server.c.s
+lab1-server.cpp.s:
+	$(MAKE) -f CMakeFiles/lab1-server-static.dir/build.make CMakeFiles/lab1-server-static.dir/lab1-server.cpp.s
+	$(MAKE) -f CMakeFiles/lab1-server-shared.dir/build.make CMakeFiles/lab1-server-shared.dir/lab1-server.cpp.s
+.PHONY : lab1-server.cpp.s
 
 # Help Target
 help:

@@ -7,7 +7,7 @@
 				{
 					"build" : ".",
 					"hasInstallRule" : true,
-					"jsonFile" : "directory-.-Debug-b2bb9ba4163d85cad8f9.json",
+					"jsonFile" : "directory-.-Debug-08738b7f1ac4e92a1c0b.json",
 					"minimumCMakeVersion" : 
 					{
 						"string" : "3.10"
@@ -46,28 +46,28 @@
 				{
 					"directoryIndex" : 0,
 					"id" : "lab1-client-shared::@6890427a1f51a3e7e1df",
-					"jsonFile" : "target-lab1-client-shared-Debug-f7056d93ae985f08cf53.json",
+					"jsonFile" : "target-lab1-client-shared-Debug-18b440d458794b85560b.json",
 					"name" : "lab1-client-shared",
 					"projectIndex" : 0
 				},
 				{
 					"directoryIndex" : 0,
 					"id" : "lab1-server-shared::@6890427a1f51a3e7e1df",
-					"jsonFile" : "target-lab1-server-shared-Debug-4d33e270455695d9a6d1.json",
+					"jsonFile" : "target-lab1-server-shared-Debug-8616d0b3202e23110ced.json",
 					"name" : "lab1-server-shared",
 					"projectIndex" : 0
 				},
 				{
 					"directoryIndex" : 0,
 					"id" : "lab1-server-static::@6890427a1f51a3e7e1df",
-					"jsonFile" : "target-lab1-server-static-Debug-8392a2f39e6dcbcb9cc8.json",
+					"jsonFile" : "target-lab1-server-static-Debug-fbf05356a21d8801728f.json",
 					"name" : "lab1-server-static",
 					"projectIndex" : 0
 				},
 				{
 					"directoryIndex" : 0,
 					"id" : "static::@6890427a1f51a3e7e1df",
-					"jsonFile" : "target-static-Debug-60cdd2c059d69cc7fc85.json",
+					"jsonFile" : "target-static-Debug-1fea246d7dd0d44e90e8.json",
 					"name" : "static",
 					"projectIndex" : 0
 				}

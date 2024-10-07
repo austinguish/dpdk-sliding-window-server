@@ -39,6 +39,12 @@ const bool UNFINISHED = true;
 unordered_map<int, PortThreadQueue> port_queues;
 unordered_map<int, thread> port_threads;
 
+// predefine the flow state struct table for each flow here
+
+
+
+
+
 uint32_t
 checksum(unsigned char *buf, uint32_t nbytes, uint32_t sum) {
     unsigned int i;

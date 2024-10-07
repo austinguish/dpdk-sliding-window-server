@@ -69,31 +69,31 @@ include CMakeFiles/lab1-client-shared.dir/progress.make
 # Include the compile flags for this target's objects.
 include CMakeFiles/lab1-client-shared.dir/flags.make
 
-CMakeFiles/lab1-client-shared.dir/lab1-client.c.o: CMakeFiles/lab1-client-shared.dir/flags.make
-CMakeFiles/lab1-client-shared.dir/lab1-client.c.o: /home/tianyi/Server/lab1-client.c
-CMakeFiles/lab1-client-shared.dir/lab1-client.c.o: CMakeFiles/lab1-client-shared.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/tianyi/Server/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Building C object CMakeFiles/lab1-client-shared.dir/lab1-client.c.o"
-	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/lab1-client-shared.dir/lab1-client.c.o -MF CMakeFiles/lab1-client-shared.dir/lab1-client.c.o.d -o CMakeFiles/lab1-client-shared.dir/lab1-client.c.o -c /home/tianyi/Server/lab1-client.c
+CMakeFiles/lab1-client-shared.dir/lab1-client.cpp.o: CMakeFiles/lab1-client-shared.dir/flags.make
+CMakeFiles/lab1-client-shared.dir/lab1-client.cpp.o: /home/tianyi/Server/lab1-client.cpp
+CMakeFiles/lab1-client-shared.dir/lab1-client.cpp.o: CMakeFiles/lab1-client-shared.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/tianyi/Server/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Building CXX object CMakeFiles/lab1-client-shared.dir/lab1-client.cpp.o"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/lab1-client-shared.dir/lab1-client.cpp.o -MF CMakeFiles/lab1-client-shared.dir/lab1-client.cpp.o.d -o CMakeFiles/lab1-client-shared.dir/lab1-client.cpp.o -c /home/tianyi/Server/lab1-client.cpp
 
-CMakeFiles/lab1-client-shared.dir/lab1-client.c.i: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing C source to CMakeFiles/lab1-client-shared.dir/lab1-client.c.i"
-	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /home/tianyi/Server/lab1-client.c > CMakeFiles/lab1-client-shared.dir/lab1-client.c.i
+CMakeFiles/lab1-client-shared.dir/lab1-client.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/lab1-client-shared.dir/lab1-client.cpp.i"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/tianyi/Server/lab1-client.cpp > CMakeFiles/lab1-client-shared.dir/lab1-client.cpp.i
 
-CMakeFiles/lab1-client-shared.dir/lab1-client.c.s: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling C source to assembly CMakeFiles/lab1-client-shared.dir/lab1-client.c.s"
-	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /home/tianyi/Server/lab1-client.c -o CMakeFiles/lab1-client-shared.dir/lab1-client.c.s
+CMakeFiles/lab1-client-shared.dir/lab1-client.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/lab1-client-shared.dir/lab1-client.cpp.s"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/tianyi/Server/lab1-client.cpp -o CMakeFiles/lab1-client-shared.dir/lab1-client.cpp.s
 
 # Object files for target lab1-client-shared
 lab1__client__shared_OBJECTS = \
-"CMakeFiles/lab1-client-shared.dir/lab1-client.c.o"
+"CMakeFiles/lab1-client-shared.dir/lab1-client.cpp.o"
 
 # External object files for target lab1-client-shared
 lab1__client__shared_EXTERNAL_OBJECTS =
 
-lab1-client-shared: CMakeFiles/lab1-client-shared.dir/lab1-client.c.o
+lab1-client-shared: CMakeFiles/lab1-client-shared.dir/lab1-client.cpp.o
 lab1-client-shared: CMakeFiles/lab1-client-shared.dir/build.make
 lab1-client-shared: CMakeFiles/lab1-client-shared.dir/link.txt
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --bold --progress-dir=/home/tianyi/Server/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Linking C executable lab1-client-shared"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --bold --progress-dir=/home/tianyi/Server/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Linking CXX executable lab1-client-shared"
 	$(CMAKE_COMMAND) -E cmake_link_script CMakeFiles/lab1-client-shared.dir/link.txt --verbose=$(VERBOSE)
 	/home/tianyi/.cache/JetBrains/RemoteDev/dist/1729cdbf0ed8b_CLion-2024.2.2/bin/cmake/linux/x64/bin/cmake -E create_symlink lab1-client-shared /home/tianyi/Server/cmake-build-debug/lab1-client
 

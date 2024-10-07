@@ -4,12 +4,15 @@
 
 #ifndef FLOWSTATE_H
 #define FLOWSTATE_H
-
-
+#define WINDOW_SIZE 1024
+#include <queue>
+#include<map>
 struct flow_state_sender {
     uint16_t next_seq_num;  // last packet sent
     uint16_t effective_window;
-    struct rte_mbuf *window_packets[WINDOW_SIZE];
+    // struct rte_mbuf *window_packets[WINDOW_SIZE];
+    // use queue<int> to store the unacked seq
+    std::map<int, struct rte_mbuf *> unacked_packets;
     uint64_t send_times[WINDOW_SIZE];
     int last_acked; // acked packets
     // last written to the window
@@ -24,5 +27,6 @@ struct flow_state_receiver{
     struct rte_mbuf *window_packets[WINDOW_SIZE];
     uint64_t receive_times[WINDOW_SIZE];
 };
+
 
 #endif //FLOWSTATE_H

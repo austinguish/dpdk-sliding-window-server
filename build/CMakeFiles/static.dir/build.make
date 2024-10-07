@@ -43,10 +43,10 @@ RM = /usr/bin/cmake -E remove -f
 EQUALS = =
 
 # The top-level source directory on which CMake was run.
-CMAKE_SOURCE_DIR = /users/jiangyw/Server
+CMAKE_SOURCE_DIR = /home/tianyi/Server
 
 # The top-level build directory on which CMake was run.
-CMAKE_BINARY_DIR = /users/jiangyw/Server/build
+CMAKE_BINARY_DIR = /home/tianyi/Server/build
 
 # Utility rule file for static.
 
@@ -54,7 +54,7 @@ CMAKE_BINARY_DIR = /users/jiangyw/Server/build
 include CMakeFiles/static.dir/progress.make
 
 CMakeFiles/static: lab1-server-static
-	/usr/bin/cmake -E create_symlink lab1-server-static /users/jiangyw/Server/build/lab1-server
+	/usr/bin/cmake -E create_symlink lab1-server-static /home/tianyi/Server/build/lab1-server
 
 static: CMakeFiles/static
 static: CMakeFiles/static.dir/build.make
@@ -71,6 +71,6 @@ CMakeFiles/static.dir/clean:
 .PHONY : CMakeFiles/static.dir/clean
 
 CMakeFiles/static.dir/depend:
-	cd /users/jiangyw/Server/build && $(CMAKE_COMMAND) -E cmake_depends "Unix Makefiles" /users/jiangyw/Server /users/jiangyw/Server /users/jiangyw/Server/build /users/jiangyw/Server/build /users/jiangyw/Server/build/CMakeFiles/static.dir/DependInfo.cmake --color=$(COLOR)
+	cd /home/tianyi/Server/build && $(CMAKE_COMMAND) -E cmake_depends "Unix Makefiles" /home/tianyi/Server /home/tianyi/Server /home/tianyi/Server/build /home/tianyi/Server/build /home/tianyi/Server/build/CMakeFiles/static.dir/DependInfo.cmake --color=$(COLOR)
 .PHONY : CMakeFiles/static.dir/depend
 
