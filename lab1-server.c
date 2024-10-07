@@ -27,6 +27,8 @@ struct rte_mempool *mbuf_pool = NULL;
 static struct rte_ether_addr my_eth;
 size_t window_len = 10;
 
+struct rte_ring *ack_ring;
+
 int flow_size = 10000;
 int packet_len = 1000;
 int ack_len = 10;
@@ -428,16 +430,31 @@ lcore_main(void) {
 
             /* Send back echo replies. */
             uint16_t nb_tx = 0;
-            if (nb_replies > 0) {
+            nb_replies = rte_ring_sc_dequeue_burst(ack_ring, (void **)acks, BURST_SIZE, NULL);
+            if (num_dequeued > 0) {
+                // Send back the ACKs to the client
                 nb_tx = rte_eth_tx_burst(port, 0, acks, nb_replies);
             }
 
-            /* Free any unsent packets. */
+            // Free any unsent ACKs
             if (unlikely(nb_tx < nb_rx)) {
-                uint16_t buf;
-                for (buf = nb_tx; buf < nb_rx; buf++)
-                    rte_pktmbuf_free(acks[buf]);
+                for (uint16_t i = nb_tx; i < nb_rx; i++) {
+                    rte_pktmbuf_free(acks[i]);
+                }
             }
+            
+            // uint16_t nb_tx = 0;
+            // if (nb_replies > 0) {
+            //     nb_tx = rte_eth_tx_burst(port, 0, acks, nb_replies);
+            // }
+
+            // /* Free any unsent packets. */
+            // if (unlikely(nb_tx < nb_rx)) {
+            //     uint16_t buf;
+            //     for (buf = nb_tx; buf < nb_rx; buf++)
+            //         rte_pktmbuf_free(acks[buf]);
+            // }
+
         }
     }
     /* >8 End of loop. */
@@ -567,13 +584,12 @@ void process_packets(PortThreadQueue& queue, int port_id) {
             udp_h_ack->src_port = udp_h->udp_hdr.dst_port;
             udp_h_ack->dst_port = udp_h->udp_hdr.src_port;
             udp_h_ack->dgram_len = rte_cpu_to_be_16(sizeof(struct udp_header_extra) + ack_len);
-            udp_h_ack_ext->window_size = ????;
-            udp_h_ack_seq->seq = udp_h->seq;
+            udp_h_ack_ext->window_size = ???????;
+            udp_h_ack_ext->seq = udp_h->seq;
             printf("packet transmission time is %" PRIu64 "\n", time_now(0) - udp_h_ack_seq->send_time);
-            udp_h_ack_seq->send_time = udp_h->send_time;
+            udp_h_ack_ext->send_time = udp_h->send_time;
             
             uint16_t udp_cksum = rte_ipv4_udptcp_cksum(ip_h_ack, (void *)udp_h_ack);
-
             udp_h_ack->dgram_cksum = rte_cpu_to_be_16(udp_cksum);
 
             header_size += sizeof(*udp_h_ack_ext);
@@ -581,9 +597,19 @@ void process_packets(PortThreadQueue& queue, int port_id) {
             /* set the payload */
             memset(ptr, 'a', ack_len);
 
+            ack->l2_len = RTE_ETHER_HDR_LEN;
+            ack->l3_len = sizeof(struct rte_ipv4_hdr);
+            // pkt->ol_flags = PKT_TX_IP_CKSUM | PKT_TX_IPV4;
+            ack->data_len = header_size + ack_len;
+            ack->pkt_len = header_size + ack_len;
+            ack->nb_segs = 1;
 
-
-
+            // unsigned char *ack_buffer = rte_pktmbuf_mtod(ack, unsigned char *);
+            // Enqueue the ACK in the global ack_ring
+            if (rte_ring_sp_enqueue(ack_ring, ack) < 0) {
+                printf("Error: Failed to enqueue ACK\n");
+                rte_pktmbuf_free(ack);  // Free if enqueue fails
+            } 
         }
     }
 }
@@ -626,6 +652,10 @@ int main(int argc, char *argv[]) {
 
     if (rte_lcore_count() > 1)
         printf("\nWARNING: Too many lcores enabled. Only 1 used.\n");
+
+    ack_ring = rte_ring_create("ACK_RING", BURST_SIZE, rte_socket_id(), RING_F_SP_ENQ | RING_F_SC_DEQ);
+    if (ack_ring == NULL)
+        rte_exit(EXIT_FAILURE, "Error creating ACK ring\n");
 
     /* Call lcore_main on the main core only. Called on single lcore. 8< */
     lcore_main();
