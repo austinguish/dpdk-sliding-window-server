@@ -1,4 +1,6 @@
 ./cmake-build-debug/lab1-server-static
 ./build/lab1-server-static
-./cmake-build-debug/
-./build/
+./cmake-build-debug/*
+./build/*
+/cmake-build-debug/
+/build/

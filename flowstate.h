@@ -14,7 +14,7 @@ struct flow_state_sender {
     uint16_t advertised_window;
     // struct rte_mbuf *window_packets[WINDOW_SIZE];
     // use queue<int> to store the unacked seq
-    std::map<int, struct rte_mbuf *> unacked_packets;
+    std::unordered_map<int, struct rte_mbuf *> unacked_packets;
     std::queue<int> unacked_seq;
     uint64_t send_times[WINDOW_SIZE];
     int last_acked; // acked packets

@@ -73,7 +73,7 @@ void init_flow_table()
         sender->last_written = 0;
         sender->advertised_window = WINDOW_SIZE;
         // use std map to store the unacked packets
-        sender->unacked_packets = std::map<int, struct rte_mbuf*>();
+        sender->unacked_packets = std::unordered_map<int, struct rte_mbuf*>();
         sender->unacked_seq = std::queue<int>();
         // save the pointer to the flow state table
     }
