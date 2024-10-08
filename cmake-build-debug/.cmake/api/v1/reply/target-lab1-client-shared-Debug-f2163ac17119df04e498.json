@@ -2,7 +2,7 @@
 	"artifacts" : 
 	[
 		{
-			"path" : "lab1-client-static"
+			"path" : "lab1-client-shared"
 		}
 	],
 	"backtrace" : 1,
@@ -11,7 +11,7 @@
 		"commands" : 
 		[
 			"add_executable",
-			"target_link_libraries",
+			"install",
 			"target_include_directories"
 		],
 		"files" : 
@@ -26,19 +26,19 @@
 			{
 				"command" : 0,
 				"file" : 0,
-				"line" : 36,
+				"line" : 40,
 				"parent" : 0
 			},
 			{
 				"command" : 1,
 				"file" : 0,
-				"line" : 55,
+				"line" : 94,
 				"parent" : 0
 			},
 			{
 				"command" : 2,
 				"file" : 0,
-				"line" : 50,
+				"line" : 61,
 				"parent" : 0
 			}
 		]
@@ -49,7 +49,10 @@
 			"compileCommandFragments" : 
 			[
 				{
-					"fragment" : " -Og -DALLOW_EXPERIMENTAL_API -mssse3 -march=native -mtune=native -mssse3 -g -std=c++11 -fdiagnostics-color=always"
+					"fragment" : " -Og -DALLOW_EXPERIMENTAL_API -mssse3 -march=native -mtune=native -mssse3 -g  "
+				},
+				{
+					"fragment" : "-std=c++11"
 				}
 			],
 			"includes" : 
@@ -60,21 +63,27 @@
 				}
 			],
 			"language" : "CXX",
-			"languageStandard" : 
-			{
-				"backtraces" : 
-				[
-					1
-				],
-				"standard" : "11"
-			},
 			"sourceIndexes" : 
 			[
 				0
 			]
 		}
 	],
-	"id" : "lab1-client-static::@6890427a1f51a3e7e1df",
+	"id" : "lab1-client-shared::@6890427a1f51a3e7e1df",
+	"install" : 
+	{
+		"destinations" : 
+		[
+			{
+				"backtrace" : 2,
+				"path" : "bin"
+			}
+		],
+		"prefix" : 
+		{
+			"path" : "/usr/local"
+		}
+	},
 	"link" : 
 	{
 		"commandFragments" : 
@@ -88,295 +97,238 @@
 				"role" : "flags"
 			},
 			{
-				"backtrace" : 2,
 				"fragment" : "-lrte_node",
 				"role" : "libraries"
 			},
 			{
-				"backtrace" : 2,
 				"fragment" : "-lrte_graph",
 				"role" : "libraries"
 			},
 			{
-				"backtrace" : 2,
 				"fragment" : "-lrte_pipeline",
 				"role" : "libraries"
 			},
 			{
-				"backtrace" : 2,
 				"fragment" : "-lrte_table",
 				"role" : "libraries"
 			},
 			{
-				"backtrace" : 2,
 				"fragment" : "-lrte_pdump",
 				"role" : "libraries"
 			},
 			{
-				"backtrace" : 2,
 				"fragment" : "-lrte_port",
 				"role" : "libraries"
 			},
 			{
-				"backtrace" : 2,
 				"fragment" : "-lrte_fib",
 				"role" : "libraries"
 			},
 			{
-				"backtrace" : 2,
 				"fragment" : "-lrte_pdcp",
 				"role" : "libraries"
 			},
 			{
-				"backtrace" : 2,
 				"fragment" : "-lrte_ipsec",
 				"role" : "libraries"
 			},
 			{
-				"backtrace" : 2,
 				"fragment" : "-lrte_vhost",
 				"role" : "libraries"
 			},
 			{
-				"backtrace" : 2,
 				"fragment" : "-lrte_stack",
 				"role" : "libraries"
 			},
 			{
-				"backtrace" : 2,
 				"fragment" : "-lrte_security",
 				"role" : "libraries"
 			},
 			{
-				"backtrace" : 2,
 				"fragment" : "-lrte_sched",
 				"role" : "libraries"
 			},
 			{
-				"backtrace" : 2,
 				"fragment" : "-lrte_reorder",
 				"role" : "libraries"
 			},
 			{
-				"backtrace" : 2,
 				"fragment" : "-lrte_rib",
 				"role" : "libraries"
 			},
 			{
-				"backtrace" : 2,
 				"fragment" : "-lrte_mldev",
 				"role" : "libraries"
 			},
 			{
-				"backtrace" : 2,
 				"fragment" : "-lrte_regexdev",
 				"role" : "libraries"
 			},
 			{
-				"backtrace" : 2,
 				"fragment" : "-lrte_rawdev",
 				"role" : "libraries"
 			},
 			{
-				"backtrace" : 2,
 				"fragment" : "-lrte_power",
 				"role" : "libraries"
 			},
 			{
-				"backtrace" : 2,
 				"fragment" : "-lrte_pcapng",
 				"role" : "libraries"
 			},
 			{
-				"backtrace" : 2,
 				"fragment" : "-lrte_member",
 				"role" : "libraries"
 			},
 			{
-				"backtrace" : 2,
 				"fragment" : "-lrte_lpm",
 				"role" : "libraries"
 			},
 			{
-				"backtrace" : 2,
 				"fragment" : "-lrte_latencystats",
 				"role" : "libraries"
 			},
 			{
-				"backtrace" : 2,
 				"fragment" : "-lrte_jobstats",
 				"role" : "libraries"
 			},
 			{
-				"backtrace" : 2,
 				"fragment" : "-lrte_ip_frag",
 				"role" : "libraries"
 			},
 			{
-				"backtrace" : 2,
 				"fragment" : "-lrte_gso",
 				"role" : "libraries"
 			},
 			{
-				"backtrace" : 2,
 				"fragment" : "-lrte_gro",
 				"role" : "libraries"
 			},
 			{
-				"backtrace" : 2,
 				"fragment" : "-lrte_gpudev",
 				"role" : "libraries"
 			},
 			{
-				"backtrace" : 2,
 				"fragment" : "-lrte_dispatcher",
 				"role" : "libraries"
 			},
 			{
-				"backtrace" : 2,
 				"fragment" : "-lrte_eventdev",
 				"role" : "libraries"
 			},
 			{
-				"backtrace" : 2,
 				"fragment" : "-lrte_efd",
 				"role" : "libraries"
 			},
 			{
-				"backtrace" : 2,
 				"fragment" : "-lrte_dmadev",
 				"role" : "libraries"
 			},
 			{
-				"backtrace" : 2,
 				"fragment" : "-lrte_distributor",
 				"role" : "libraries"
 			},
 			{
-				"backtrace" : 2,
 				"fragment" : "-lrte_cryptodev",
 				"role" : "libraries"
 			},
 			{
-				"backtrace" : 2,
 				"fragment" : "-lrte_compressdev",
 				"role" : "libraries"
 			},
 			{
-				"backtrace" : 2,
 				"fragment" : "-lrte_cfgfile",
 				"role" : "libraries"
 			},
 			{
-				"backtrace" : 2,
 				"fragment" : "-lrte_bpf",
 				"role" : "libraries"
 			},
 			{
-				"backtrace" : 2,
 				"fragment" : "-lrte_bitratestats",
 				"role" : "libraries"
 			},
 			{
-				"backtrace" : 2,
 				"fragment" : "-lrte_bbdev",
 				"role" : "libraries"
 			},
 			{
-				"backtrace" : 2,
 				"fragment" : "-lrte_acl",
 				"role" : "libraries"
 			},
 			{
-				"backtrace" : 2,
 				"fragment" : "-lrte_timer",
 				"role" : "libraries"
 			},
 			{
-				"backtrace" : 2,
 				"fragment" : "-lrte_hash",
 				"role" : "libraries"
 			},
 			{
-				"backtrace" : 2,
 				"fragment" : "-lrte_metrics",
 				"role" : "libraries"
 			},
 			{
-				"backtrace" : 2,
 				"fragment" : "-lrte_cmdline",
 				"role" : "libraries"
 			},
 			{
-				"backtrace" : 2,
 				"fragment" : "-lrte_pci",
 				"role" : "libraries"
 			},
 			{
-				"backtrace" : 2,
 				"fragment" : "-lrte_ethdev",
 				"role" : "libraries"
 			},
 			{
-				"backtrace" : 2,
 				"fragment" : "-lrte_meter",
 				"role" : "libraries"
 			},
 			{
-				"backtrace" : 2,
 				"fragment" : "-lrte_net",
 				"role" : "libraries"
 			},
 			{
-				"backtrace" : 2,
 				"fragment" : "-lrte_mbuf",
 				"role" : "libraries"
 			},
 			{
-				"backtrace" : 2,
 				"fragment" : "-lrte_mempool",
 				"role" : "libraries"
 			},
 			{
-				"backtrace" : 2,
 				"fragment" : "-lrte_rcu",
 				"role" : "libraries"
 			},
 			{
-				"backtrace" : 2,
 				"fragment" : "-lrte_ring",
 				"role" : "libraries"
 			},
 			{
-				"backtrace" : 2,
 				"fragment" : "-lrte_eal",
 				"role" : "libraries"
 			},
 			{
-				"backtrace" : 2,
 				"fragment" : "-lrte_telemetry",
 				"role" : "libraries"
 			},
 			{
-				"backtrace" : 2,
 				"fragment" : "-lrte_argparse",
 				"role" : "libraries"
 			},
 			{
-				"backtrace" : 2,
 				"fragment" : "-lrte_kvargs",
 				"role" : "libraries"
 			},
 			{
-				"backtrace" : 2,
 				"fragment" : "-lrte_log",
 				"role" : "libraries"
 			}
 		],
 		"language" : "CXX"
 	},
-	"name" : "lab1-client-static",
-	"nameOnDisk" : "lab1-client-static",
+	"name" : "lab1-client-shared",
+	"nameOnDisk" : "lab1-client-shared",
 	"paths" : 
 	{
 		"build" : ".",

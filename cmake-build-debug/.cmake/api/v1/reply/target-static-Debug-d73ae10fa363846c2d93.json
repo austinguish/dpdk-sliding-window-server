@@ -18,7 +18,7 @@
 			{
 				"command" : 0,
 				"file" : 0,
-				"line" : 74,
+				"line" : 86,
 				"parent" : 0
 			}
 		]
@@ -26,7 +26,6 @@
 	"dependencies" : 
 	[
 		{
-			"backtrace" : 1,
 			"id" : "lab1-server-static::@6890427a1f51a3e7e1df"
 		}
 	],
