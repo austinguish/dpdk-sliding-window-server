@@ -400,6 +400,8 @@ static void send_packet(int flow_id)
     }
 
     // state->last_send_time = rte_get_timer_cycles();
+    // send a packet to this flow
+    printf("send out a packet\n");
 }
 
 void receive_and_process_acks()

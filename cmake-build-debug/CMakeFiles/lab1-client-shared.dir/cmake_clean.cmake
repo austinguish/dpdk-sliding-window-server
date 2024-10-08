@@ -1,6 +1,5 @@
 file(REMOVE_RECURSE
   "CMakeFiles/lab1-client-shared.dir/lab1-client.cpp.o"
-  "CMakeFiles/lab1-client-shared.dir/lab1-client.cpp.o.d"
   "lab1-client-shared"
   "lab1-client-shared.pdb"
 )
