@@ -361,6 +361,23 @@ lcore_main(void) {
                 // update flow state
                 // flow_state->receive_times[udp_h->seq] = time_now(0);
                 flow_state->window_packets[udp_port_id][udp_h->seq] = pkt;
+
+                // init last_received
+                if (flow_state->last_received.find(udp_port_id) == flow_state->last_received.end()){
+                    flow_state->last_received[udp_port_id] = 0;
+                }
+
+                // init next_seq_num_expected
+                if (flow_state->next_seq_num_expected.find(udp_port_id) == flow_state->next_seq_num_expected.end()) {
+                    flow_state->next_seq_num_expected[udp_port_id] = 1;
+                }
+
+                // init last_read
+                if (flow_state->last_read.find(udp_port_id) == flow_state->last_read.end()) {
+                    flow_state->last_read[udp_port_id] = 0;
+                }
+
+
                 flow_state->last_received[udp_port_id] = max(flow_state->last_received[udp_port_id], udp_h->seq);
 
                 // check if the packet is in order
@@ -676,10 +693,10 @@ void init_flow_state() {
         printf("Error allocating flow state\n");
         return;
     }
-    flow_state->next_seq_num_expected = 1;
+    // flow_state->next_seq_num_expected = 1;
     flow_state->advertised_window = WINDOW_SIZE; // Initial window size
-    flow_state->last_read = 0; 
-    flow_state->last_received = 0; 
+    // flow_state->last_read = 0;
+    // flow_state->last_received = 0;
 }
 
 /*
