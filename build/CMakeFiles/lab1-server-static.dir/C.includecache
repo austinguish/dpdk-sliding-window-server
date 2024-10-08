@@ -6,7 +6,7 @@
 
 #IncludeRegexTransform: 
 
-/users/jiangyw/Server/lab1-server.c
+/mydata/Server/lab1-server.c
 inttypes.h
 -
 rte_cycles.h
@@ -28,9 +28,9 @@ stdio.h
 stdlib.h
 -
 udp_header.h
-/users/jiangyw/Server/udp_header.h
+/mydata/Server/udp_header.h
 
-/users/jiangyw/Server/udp_header.h
+/mydata/Server/udp_header.h
 rte_udp.h
 -
 

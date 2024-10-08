@@ -48,10 +48,17 @@ RM = /usr/bin/cmake -E remove -f
 EQUALS = =
 
 # The top-level source directory on which CMake was run.
+<<<<<<< Updated upstream
 CMAKE_SOURCE_DIR = /home/tianyi/Server
 
 # The top-level build directory on which CMake was run.
 CMAKE_BINARY_DIR = /home/tianyi/Server/build
+=======
+CMAKE_SOURCE_DIR = /mydata/Server
+
+# The top-level build directory on which CMake was run.
+CMAKE_BINARY_DIR = /mydata/Server/build
+>>>>>>> Stashed changes
 
 #=============================================================================
 # Targets provided globally by CMake.
@@ -126,9 +133,15 @@ rebuild_cache/fast: rebuild_cache
 
 # The main all target
 all: cmake_check_build_system
+<<<<<<< Updated upstream
 	$(CMAKE_COMMAND) -E cmake_progress_start /home/tianyi/Server/build/CMakeFiles /home/tianyi/Server/build/CMakeFiles/progress.marks
 	$(MAKE) -f CMakeFiles/Makefile2 all
 	$(CMAKE_COMMAND) -E cmake_progress_start /home/tianyi/Server/build/CMakeFiles 0
+=======
+	$(CMAKE_COMMAND) -E cmake_progress_start /mydata/Server/build/CMakeFiles /mydata/Server/build/CMakeFiles/progress.marks
+	$(MAKE) -f CMakeFiles/Makefile2 all
+	$(CMAKE_COMMAND) -E cmake_progress_start /mydata/Server/build/CMakeFiles 0
+>>>>>>> Stashed changes
 .PHONY : all
 
 # The main clean target
