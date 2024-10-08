@@ -9,6 +9,9 @@ set(CMAKE_DEPENDS_CHECK_CXX
 =======
 set(CMAKE_DEPENDS_CHECK_C
   "/mydata/Server/lab1-server.c" "/mydata/Server/build/CMakeFiles/lab1-server-static.dir/lab1-server.c.o"
+<<<<<<< Updated upstream
+>>>>>>> Stashed changes
+=======
 >>>>>>> Stashed changes
   )
 set(CMAKE_CXX_COMPILER_ID "GNU")

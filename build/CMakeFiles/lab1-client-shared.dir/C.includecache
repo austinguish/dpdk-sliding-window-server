@@ -6,9 +6,9 @@
 
 #IncludeRegexTransform: 
 
-/users/jiangyw/Server/lab1-client.c
+/mydata/Server/lab1-client.c
 udp_header.h
-/users/jiangyw/Server/udp_header.h
+/mydata/Server/udp_header.h
 inttypes.h
 -
 rte_common.h
@@ -36,7 +36,7 @@ time.h
 arpa/inet.h
 -
 
-/users/jiangyw/Server/udp_header.h
+/mydata/Server/udp_header.h
 rte_udp.h
 -
 

@@ -44,10 +44,17 @@ EQUALS = =
 
 # The top-level source directory on which CMake was run.
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
 CMAKE_SOURCE_DIR = /home/tianyi/Server
 
 # The top-level build directory on which CMake was run.
 CMAKE_BINARY_DIR = /home/tianyi/Server/build
+=======
+CMAKE_SOURCE_DIR = /mydata/Server
+
+# The top-level build directory on which CMake was run.
+CMAKE_BINARY_DIR = /mydata/Server/build
+>>>>>>> Stashed changes
 =======
 CMAKE_SOURCE_DIR = /mydata/Server
 
@@ -90,6 +97,9 @@ CMakeFiles/lab1-server-shared.dir/lab1-server.c.i: cmake_force
 CMakeFiles/lab1-server-shared.dir/lab1-server.c.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling C source to assembly CMakeFiles/lab1-server-shared.dir/lab1-server.c.s"
 	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /mydata/Server/lab1-server.c -o CMakeFiles/lab1-server-shared.dir/lab1-server.c.s
+<<<<<<< Updated upstream
+>>>>>>> Stashed changes
+=======
 >>>>>>> Stashed changes
 
 # Object files for target lab1-server-shared
@@ -103,9 +113,15 @@ lab1-server-shared: CMakeFiles/lab1-server-shared.dir/lab1-server.cpp.o
 lab1-server-shared: CMakeFiles/lab1-server-shared.dir/build.make
 lab1-server-shared: CMakeFiles/lab1-server-shared.dir/link.txt
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --bold --progress-dir=/home/tianyi/Server/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Linking CXX executable lab1-server-shared"
 	$(CMAKE_COMMAND) -E cmake_link_script CMakeFiles/lab1-server-shared.dir/link.txt --verbose=$(VERBOSE)
 	/usr/bin/cmake -E create_symlink lab1-server-shared /home/tianyi/Server/build/lab1-server
+=======
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --bold --progress-dir=/mydata/Server/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Linking C executable lab1-server-shared"
+	$(CMAKE_COMMAND) -E cmake_link_script CMakeFiles/lab1-server-shared.dir/link.txt --verbose=$(VERBOSE)
+	/usr/bin/cmake -E create_symlink lab1-server-shared /mydata/Server/build/lab1-server
+>>>>>>> Stashed changes
 =======
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --bold --progress-dir=/mydata/Server/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Linking C executable lab1-server-shared"
 	$(CMAKE_COMMAND) -E cmake_link_script CMakeFiles/lab1-server-shared.dir/link.txt --verbose=$(VERBOSE)
@@ -123,7 +139,11 @@ CMakeFiles/lab1-server-shared.dir/clean:
 
 CMakeFiles/lab1-server-shared.dir/depend:
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
 	cd /home/tianyi/Server/build && $(CMAKE_COMMAND) -E cmake_depends "Unix Makefiles" /home/tianyi/Server /home/tianyi/Server /home/tianyi/Server/build /home/tianyi/Server/build /home/tianyi/Server/build/CMakeFiles/lab1-server-shared.dir/DependInfo.cmake --color=$(COLOR)
+=======
+	cd /mydata/Server/build && $(CMAKE_COMMAND) -E cmake_depends "Unix Makefiles" /mydata/Server /mydata/Server /mydata/Server/build /mydata/Server/build /mydata/Server/build/CMakeFiles/lab1-server-shared.dir/DependInfo.cmake --color=$(COLOR)
+>>>>>>> Stashed changes
 =======
 	cd /mydata/Server/build && $(CMAKE_COMMAND) -E cmake_depends "Unix Makefiles" /mydata/Server /mydata/Server /mydata/Server/build /mydata/Server/build /mydata/Server/build/CMakeFiles/lab1-server-shared.dir/DependInfo.cmake --color=$(COLOR)
 >>>>>>> Stashed changes

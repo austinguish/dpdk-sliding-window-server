@@ -1,5 +1,9 @@
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
 # Install script for directory: /home/tianyi/Server
+=======
+# Install script for directory: /mydata/Server
+>>>>>>> Stashed changes
 =======
 # Install script for directory: /mydata/Server
 >>>>>>> Stashed changes
@@ -49,7 +53,11 @@ if("x${CMAKE_INSTALL_COMPONENT}x" STREQUAL "xUnspecifiedx" OR NOT CMAKE_INSTALL_
          RPATH "")
   endif()
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
   file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/bin" TYPE EXECUTABLE FILES "/home/tianyi/Server/build/lab1-server-shared")
+=======
+  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/bin" TYPE EXECUTABLE FILES "/mydata/Server/build/lab1-server-shared")
+>>>>>>> Stashed changes
 =======
   file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/bin" TYPE EXECUTABLE FILES "/mydata/Server/build/lab1-server-shared")
 >>>>>>> Stashed changes
@@ -69,7 +77,11 @@ if("x${CMAKE_INSTALL_COMPONENT}x" STREQUAL "xUnspecifiedx" OR NOT CMAKE_INSTALL_
          RPATH "")
   endif()
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
   file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/bin" TYPE EXECUTABLE FILES "/home/tianyi/Server/build/lab1-server-static")
+=======
+  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/bin" TYPE EXECUTABLE FILES "/mydata/Server/build/lab1-server-static")
+>>>>>>> Stashed changes
 =======
   file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/bin" TYPE EXECUTABLE FILES "/mydata/Server/build/lab1-server-static")
 >>>>>>> Stashed changes
@@ -89,7 +101,11 @@ if("x${CMAKE_INSTALL_COMPONENT}x" STREQUAL "xUnspecifiedx" OR NOT CMAKE_INSTALL_
          RPATH "")
   endif()
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
   file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/bin" TYPE EXECUTABLE FILES "/home/tianyi/Server/build/lab1-client-shared")
+=======
+  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/bin" TYPE EXECUTABLE FILES "/mydata/Server/build/lab1-client-shared")
+>>>>>>> Stashed changes
 =======
   file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/bin" TYPE EXECUTABLE FILES "/mydata/Server/build/lab1-client-shared")
 >>>>>>> Stashed changes
@@ -110,7 +126,11 @@ endif()
 string(REPLACE ";" "\n" CMAKE_INSTALL_MANIFEST_CONTENT
        "${CMAKE_INSTALL_MANIFEST_FILES}")
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
 file(WRITE "/home/tianyi/Server/build/${CMAKE_INSTALL_MANIFEST}"
+=======
+file(WRITE "/mydata/Server/build/${CMAKE_INSTALL_MANIFEST}"
+>>>>>>> Stashed changes
 =======
 file(WRITE "/mydata/Server/build/${CMAKE_INSTALL_MANIFEST}"
 >>>>>>> Stashed changes
