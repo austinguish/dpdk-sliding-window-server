@@ -27,8 +27,8 @@ struct flow_state_receiver{
     uint16_t advertised_window;
     uint16_t last_read;
     uint16_t last_received;
-    struct rte_mbuf *window_packets[WINDOW_SIZE];
-    uint64_t receive_times[WINDOW_SIZE];
+    std::map<int, struct rte_mbuf *> window_packets;
+    std::map<int, uint64_t> receive_times;
 };
 
 
