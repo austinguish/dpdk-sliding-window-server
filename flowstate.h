@@ -8,14 +8,17 @@
 #include <queue>
 #include<map>
 #include<unordered_map>
+<<<<<<< HEAD
 
+=======
+>>>>>>> 0c3f566dfa42155edfc8279a73f9a0857c8c954e
 struct flow_state_sender {
     uint16_t next_seq_num;  // last packet sent
     uint16_t effective_window;
     uint16_t advertised_window;
     // struct rte_mbuf *window_packets[WINDOW_SIZE];
     // use queue<int> to store the unacked seq
-    std::map<int, struct rte_mbuf *> unacked_packets;
+    std::unordered_map<int, struct rte_mbuf *> unacked_packets;
     std::queue<int> unacked_seq;
     uint64_t send_times[WINDOW_SIZE];
     int last_acked; // acked packets

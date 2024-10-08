@@ -59,13 +59,13 @@ struct flow_state_sender* flow_table[MAX_FLOW_NUM];
 //    // last written to the window
 //    uint16_t last_written; // last packet send to window
 
-const rte_ether_addr dst = {{0x14, 0x58, 0xD0, 0x58, 0xee, 0xa3}};
+const rte_ether_addr dst = {{0x14, 0x58, 0xD0, 0x58, 0xdf, 0x43}};
 
 void init_flow_table()
 {
     for (int i = 0; i < flow_num; i++)
     {
-        flow_table[i] = (struct flow_state_sender*)malloc(sizeof(struct flow_state_sender));
+        flow_table[i] = (flow_state_sender*)malloc(sizeof(struct flow_state_sender));
         struct flow_state_sender* sender = flow_table[i];
         sender->next_seq_num = 1;
         sender->effective_window = window_len;
@@ -73,7 +73,7 @@ void init_flow_table()
         sender->last_written = 0;
         sender->advertised_window = WINDOW_SIZE;
         // use std map to store the unacked packets
-        sender->unacked_packets = std::map<int, struct rte_mbuf*>();
+        sender->unacked_packets = std::unordered_map<int, struct rte_mbuf*>();
         sender->unacked_seq = std::queue<int>();
         // save the pointer to the flow state table
     }
@@ -157,7 +157,7 @@ static void prepare_packet(rte_mbuf* pkt, const int flow_id, uint16_t seq_num)
     udp_hdr_ext->udp_hdr.dst_port = rte_cpu_to_be_16(dstp);
     udp_hdr_ext->udp_hdr.dgram_len = rte_cpu_to_be_16(sizeof(udp_header_extra) + packet_len);
     udp_hdr_ext->udp_hdr.dgram_cksum = 0; // Will be filled by hardware
-    udp_hdr_ext->seq = rte_cpu_to_be_16(seq_num); // Add sequence number
+    udp_hdr_ext->seq = seq_num; // Add sequence number
     ptr += sizeof(*udp_hdr_ext);
     header_size += sizeof(*udp_hdr_ext);
 

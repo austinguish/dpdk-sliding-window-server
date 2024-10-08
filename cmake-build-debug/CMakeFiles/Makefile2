@@ -88,12 +88,12 @@ clean: CMakeFiles/static.dir/clean
 CMakeFiles/lab1-server-shared.dir/all:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/lab1-server-shared.dir/build.make CMakeFiles/lab1-server-shared.dir/depend
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/lab1-server-shared.dir/build.make CMakeFiles/lab1-server-shared.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/mydata/Server/cmake-build-debug/CMakeFiles --progress-num=5,6 "Built target lab1-server-shared"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/mydata/Server/cmake-build-debug/CMakeFiles --progress-num=5,6,7 "Built target lab1-server-shared"
 .PHONY : CMakeFiles/lab1-server-shared.dir/all
 
 # Build rule for subdir invocation for target.
 CMakeFiles/lab1-server-shared.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /mydata/Server/cmake-build-debug/CMakeFiles 2
+	$(CMAKE_COMMAND) -E cmake_progress_start /mydata/Server/cmake-build-debug/CMakeFiles 3
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 CMakeFiles/lab1-server-shared.dir/all
 	$(CMAKE_COMMAND) -E cmake_progress_start /mydata/Server/cmake-build-debug/CMakeFiles 0
 .PHONY : CMakeFiles/lab1-server-shared.dir/rule
@@ -114,12 +114,12 @@ CMakeFiles/lab1-server-shared.dir/clean:
 CMakeFiles/lab1-server-static.dir/all:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/lab1-server-static.dir/build.make CMakeFiles/lab1-server-static.dir/depend
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/lab1-server-static.dir/build.make CMakeFiles/lab1-server-static.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/mydata/Server/cmake-build-debug/CMakeFiles --progress-num=7,8 "Built target lab1-server-static"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/mydata/Server/cmake-build-debug/CMakeFiles --progress-num=8,9,10 "Built target lab1-server-static"
 .PHONY : CMakeFiles/lab1-server-static.dir/all
 
 # Build rule for subdir invocation for target.
 CMakeFiles/lab1-server-static.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /mydata/Server/cmake-build-debug/CMakeFiles 2
+	$(CMAKE_COMMAND) -E cmake_progress_start /mydata/Server/cmake-build-debug/CMakeFiles 3
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 CMakeFiles/lab1-server-static.dir/all
 	$(CMAKE_COMMAND) -E cmake_progress_start /mydata/Server/cmake-build-debug/CMakeFiles 0
 .PHONY : CMakeFiles/lab1-server-static.dir/rule
@@ -197,7 +197,7 @@ CMakeFiles/static.dir/all: CMakeFiles/lab1-server-static.dir/all
 
 # Build rule for subdir invocation for target.
 CMakeFiles/static.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /mydata/Server/cmake-build-debug/CMakeFiles 2
+	$(CMAKE_COMMAND) -E cmake_progress_start /mydata/Server/cmake-build-debug/CMakeFiles 3
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 CMakeFiles/static.dir/all
 	$(CMAKE_COMMAND) -E cmake_progress_start /mydata/Server/cmake-build-debug/CMakeFiles 0
 .PHONY : CMakeFiles/static.dir/rule

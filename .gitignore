@@ -1,6 +1,13 @@
 ./cmake-build-debug/lab1-server-static
 ./build/lab1-server-static
+<<<<<<< HEAD
 ./cmake-build-debug/
 ./build/
 build/
 build/
+=======
+./cmake-build-debug/*
+./build/*
+/cmake-build-debug/
+/build/
+>>>>>>> 0c3f566dfa42155edfc8279a73f9a0857c8c954e

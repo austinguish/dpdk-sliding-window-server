@@ -231,6 +231,8 @@ lab1-client.o: lab1-client.cpp.o
 
 # target to build an object file
 lab1-client.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/lab1-server-shared.dir/build.make CMakeFiles/lab1-server-shared.dir/lab1-client.cpp.o
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/lab1-server-static.dir/build.make CMakeFiles/lab1-server-static.dir/lab1-client.cpp.o
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/lab1-client-shared.dir/build.make CMakeFiles/lab1-client-shared.dir/lab1-client.cpp.o
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/lab1-client-static.dir/build.make CMakeFiles/lab1-client-static.dir/lab1-client.cpp.o
 .PHONY : lab1-client.cpp.o
@@ -240,6 +242,8 @@ lab1-client.i: lab1-client.cpp.i
 
 # target to preprocess a source file
 lab1-client.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/lab1-server-shared.dir/build.make CMakeFiles/lab1-server-shared.dir/lab1-client.cpp.i
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/lab1-server-static.dir/build.make CMakeFiles/lab1-server-static.dir/lab1-client.cpp.i
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/lab1-client-shared.dir/build.make CMakeFiles/lab1-client-shared.dir/lab1-client.cpp.i
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/lab1-client-static.dir/build.make CMakeFiles/lab1-client-static.dir/lab1-client.cpp.i
 .PHONY : lab1-client.cpp.i
@@ -249,6 +253,8 @@ lab1-client.s: lab1-client.cpp.s
 
 # target to generate assembly for a file
 lab1-client.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/lab1-server-shared.dir/build.make CMakeFiles/lab1-server-shared.dir/lab1-client.cpp.s
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/lab1-server-static.dir/build.make CMakeFiles/lab1-server-static.dir/lab1-client.cpp.s
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/lab1-client-shared.dir/build.make CMakeFiles/lab1-client-shared.dir/lab1-client.cpp.s
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/lab1-client-static.dir/build.make CMakeFiles/lab1-client-static.dir/lab1-client.cpp.s
 .PHONY : lab1-client.cpp.s

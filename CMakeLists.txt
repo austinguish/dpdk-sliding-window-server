@@ -10,9 +10,13 @@ set(CMAKE_CXX_EXTENSIONS OFF)  # 不使用扩展
 # Source files
 set(SERVER_SOURCES lab1-server.cpp
         flowstate.h
+        lab1-client.cpp
+        lab1-client.cpp
 )
 set(CLIENT_SOURCES lab1-client.cpp
         flowstate.h
+        lab1-client.cpp
+        lab1-client.cpp
 )
 
 # Find DPDK package
@@ -25,16 +29,24 @@ endif()
 # Add executable targets
 add_executable(${SERVER_NAME}-shared ${SERVER_SOURCES} udp_header.h
         flowstate.h
+        lab1-client.cpp
+        lab1-client.cpp
 )
 add_executable(${SERVER_NAME}-static ${SERVER_SOURCES}
         flowstate.h
+        lab1-client.cpp
+        lab1-client.cpp
 )
 add_executable(${CLIENT_NAME}-shared ${CLIENT_SOURCES}
         flowstate.h
+        lab1-client.cpp
+        lab1-client.cpp
 )
 
 add_executable(${CLIENT_NAME}-static ${CLIENT_SOURCES}
         flowstate.h
+        lab1-client.cpp
+        lab1-client.cpp
 )
 
 # Set compile options

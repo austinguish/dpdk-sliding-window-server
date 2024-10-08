@@ -1,5 +1,7 @@
 
 
+
+
 /* SPDX-License-Identifier: BSD-3-Clause
  * Copyright(c) 2010-2015 Intel Corporation
  */
@@ -410,7 +412,7 @@ lcore_main(void) {
                         flow_state->advertised_window -= (next_seq_num - 1) - last_read_value;
                     }
                 }
-                
+
                 printf("Updated advertised window: %u\n", flow_state->advertised_window);
                 // rte_pktmbuf_dump(stdout, pkt, pkt->pkt_len);
                 // read the payload
@@ -508,7 +510,7 @@ lcore_main(void) {
             //         rte_pktmbuf_free(acks[i]);
             //     }
             // }
-            
+
             uint16_t nb_tx = 0;
             if (nb_replies > 0) {
                 nb_tx = rte_eth_tx_burst(port, 0, acks, nb_replies);
@@ -557,7 +559,7 @@ lcore_main(void) {
 //         void *payload = NULL;
 //         size_t payload_length = 0;
 //         int udp_port_id = get_port(&src, &dst, &payload, &payload_length, pkt);
-        
+
 //     }
 
 //     eth_h = rte_pktmbuf_mtod(pkt, struct rte_ether_hdr *);
@@ -571,7 +573,7 @@ lcore_main(void) {
 
 //     udp_h = rte_pktmbuf_mtod_offset(pkt, struct udp_header_extra *,
 //                                                 sizeof(struct rte_ether_hdr) + sizeof(struct rte_ipv4_hdr));
-    
+
 //     // check if the packet is a hand shake packet
 //     u_int64_t num_flow = udp_h->window_size;
 //     if (num_flow == 0) {
@@ -582,8 +584,8 @@ lcore_main(void) {
     // // construct thread queue for each port
     // for (int port_id=1; port_id <= num_flow; port_id++) {
     //     // Create queue for each port
-    //     port_queues[port_id] = PortThreadQueue();  
-    //     port_threads[port_id] = thread(process_packets, ref(port_queues[port_id]), port_id); 
+    //     port_queues[port_id] = PortThreadQueue();
+    //     port_threads[port_id] = thread(process_packets, ref(port_queues[port_id]), port_id);
     // }
 // }
 
@@ -597,7 +599,7 @@ lcore_main(void) {
 //             struct rte_ether_hdr *eth_h;
 //             struct rte_ipv4_hdr *ip_h;
 //             struct udp_header_extra *udp_h;
-            
+
 
 //             eth_h = rte_pktmbuf_mtod(pkt, struct rte_ether_hdr *);
 //             if (eth_h->ether_type != rte_be_to_cpu_16(RTE_ETHER_TYPE_IPV4)) {
@@ -659,7 +661,7 @@ lcore_main(void) {
 //             udp_h_ack_ext->seq = udp_h->seq;
 //             printf("packet transmission time is %" PRIu64 "\n", time_now(0) - udp_h_ack_seq->send_time);
 //             udp_h_ack_ext->send_time = udp_h->send_time;
-            
+
 //             uint16_t udp_cksum = rte_ipv4_udptcp_cksum(ip_h_ack, (void *)udp_h_ack);
 //             udp_h_ack->dgram_cksum = rte_cpu_to_be_16(udp_cksum);
 
@@ -680,7 +682,7 @@ lcore_main(void) {
 //             if (rte_ring_sp_enqueue(ack_ring, ack) < 0) {
 //                 printf("Error: Failed to enqueue ACK\n");
 //                 rte_pktmbuf_free(ack);  // Free if enqueue fails
-//             } 
+//             }
 //         }
 //     }
 // }

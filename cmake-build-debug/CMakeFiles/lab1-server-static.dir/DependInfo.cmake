@@ -8,6 +8,7 @@ set(CMAKE_DEPENDS_LANGUAGES
 
 # The set of dependency files which are needed:
 set(CMAKE_DEPENDS_DEPENDENCY_FILES
+  "/mydata/Server/lab1-client.cpp" "CMakeFiles/lab1-server-static.dir/lab1-client.cpp.o" "gcc" "CMakeFiles/lab1-server-static.dir/lab1-client.cpp.o.d"
   "/mydata/Server/lab1-server.cpp" "CMakeFiles/lab1-server-static.dir/lab1-server.cpp.o" "gcc" "CMakeFiles/lab1-server-static.dir/lab1-server.cpp.o.d"
   )
 
