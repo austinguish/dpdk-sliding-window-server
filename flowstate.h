@@ -7,6 +7,8 @@
 #define WINDOW_SIZE 1024
 #include <queue>
 #include<map>
+#include<unordered_map>
+
 struct flow_state_sender {
     uint16_t next_seq_num;  // last packet sent
     uint16_t effective_window;
@@ -23,12 +25,13 @@ struct flow_state_sender {
 };
 
 struct flow_state_receiver{
-    uint16_t next_seq_num_expected; // next packet expected
     uint16_t advertised_window;
-    uint16_t last_read;
-    uint16_t last_received;
-    std::map<int, struct rte_mbuf *> window_packets;
-    std::map<int, uint64_t> receive_times;
+    std::unordered_map<int, uint16_t> next_seq_num_expected;
+    std::unordered_map<int, uint16_t> last_read;
+    std::unordered_map<int, uint16_t> last_received;
+    std::unordered_map<int, std::unordered_map<int, struct rte_mbuf *>> window_packets;
+
+    // std::unordered_map<int, uint64_t> receive_times;
 };
 
 

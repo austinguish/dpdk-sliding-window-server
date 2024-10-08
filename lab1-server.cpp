@@ -359,23 +359,40 @@ lcore_main(void) {
                                                 sizeof(struct rte_ether_hdr) + sizeof(struct rte_ipv4_hdr));
 
                 // update flow state
-                flow_state->window_packets[udp_h->seq] = pkt;
-                flow_state->receive_times[udp_h->seq] = time_now(0);
-                flow_state->last_received = max(flow_state->last_received, udp_h->seq);
+                // flow_state->receive_times[udp_h->seq] = time_now(0);
+                flow_state->window_packets[udp_port_id][udp_h->seq] = pkt;
+                flow_state->last_received[udp_port_id] = max(flow_state->last_received[udp_port_id], udp_h->seq);
 
                 // check if the packet is in order
-                if (udp_h->seq == flow_state->next_seq_num_expected) {
+                if (udp_h->seq == flow_state->next_seq_num_expected[udp_port_id]) {
                     // update next_seq_num_expected
-                    flow_state->next_seq_num_expected = udp_h->seq + 1;
+                    flow_state->next_seq_num_expected[udp_port_id] = udp_h->seq + 1;
 
-                    while (flow_state->window_packets.count(flow_state->next_seq_num_expected) > 0) {
-                        flow_state->next_seq_num_expected++;
+                    while (flow_state->window_packets[udp_port_id][udp_h->seq] != nullptr) {
+                        flow_state->next_seq_num_expected[udp_port_id]++;
                     }
                 } else {
                     printf("Out of order packet received: expected %u, got %u\n",
-                        flow_state->next_seq_num_expected, udp_h->seq);
+                        flow_state->next_seq_num_expected[udp_port_id], udp_h->seq);
+
+                    // drop the out of order package
+                    flow_state->window_packets[udp_port_id].erase(udp_h->seq);
+                    continue;
                 }
-                flow_state->advertised_window = WINDOW_SIZE - ((flow_state->next_seq_num_expected-1) - flow_state->last_read);
+                flow_state->advertised_window = WINDOW_SIZE;
+
+                for (const auto& pair : flow_state->next_seq_num_expected) {
+                    int flow_id = pair.first;
+
+                    // Check if the flow_id exists in both maps
+                    if (flow_state->last_read.find(flow_id) != flow_state->last_read.end()) {
+                        uint16_t next_seq_num = flow_state->next_seq_num_expected[flow_id];
+                        uint16_t last_read_value = flow_state->last_read[flow_id];
+
+                        // Update the advertised window based on the new calculation
+                        flow_state->advertised_window -= (next_seq_num - 1) - last_read_value;
+                    }
+                }
                 
                 printf("Updated advertised window: %u\n", flow_state->advertised_window);
                 // rte_pktmbuf_dump(stdout, pkt, pkt->pkt_len);
@@ -449,7 +466,8 @@ lcore_main(void) {
                 acks[nb_replies++] = ack;
 
                 // update flow state
-                flow_state->last_read = udp_h_ack_ext->seq;
+                flow_state->last_read[udp_port_id] = udp_h_ack_ext->seq;
+                flow_state->window_packets[udp_port_id].erase(udp_h_ack_ext->seq);
 
                 rte_pktmbuf_free(bufs[i]);
             }
@@ -658,7 +676,7 @@ void init_flow_state() {
         printf("Error allocating flow state\n");
         return;
     }
-    flow_state->next_seq_num_expected = 0; 
+    flow_state->next_seq_num_expected = 1;
     flow_state->advertised_window = WINDOW_SIZE; // Initial window size
     flow_state->last_read = 0; 
     flow_state->last_received = 0; 
