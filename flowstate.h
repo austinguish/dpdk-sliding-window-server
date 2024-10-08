@@ -8,10 +8,7 @@
 #include <queue>
 #include<map>
 #include<unordered_map>
-<<<<<<< HEAD
 
-=======
->>>>>>> 0c3f566dfa42155edfc8279a73f9a0857c8c954e
 struct flow_state_sender {
     uint16_t next_seq_num;  // last packet sent
     uint16_t effective_window;
