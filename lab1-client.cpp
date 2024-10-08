@@ -67,12 +67,14 @@ void init_flow_table()
     {
         flow_table[i] = (struct flow_state_sender*)malloc(sizeof(struct flow_state_sender));
         struct flow_state_sender* sender = flow_table[i];
-        sender->next_seq_num = -1;
+        sender->next_seq_num = 1;
         sender->effective_window = window_len;
-        sender->last_acked = -1;
-        sender->last_written = -1;
+        sender->last_acked = 0;
+        sender->last_written = 0;
+        sender->advertised_window = WINDOW_SIZE;
         // use std map to store the unacked packets
         sender->unacked_packets = std::map<int, struct rte_mbuf*>();
+        sender->unacked_seq = std::queue<int>();
         // save the pointer to the flow state table
     }
 }
@@ -369,7 +371,7 @@ static void send_packet(int flow_id)
 
     // Determine how many packets we can send
     uint32_t packets_to_send = std::min(available_window,
-                                        (uint32_t)(NUM_PING - 1 - state->last_written));
+                                        (uint32_t)(NUM_PING - state->last_written));
 
     while (packets_to_send > 0)
     {

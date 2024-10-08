@@ -33,19 +33,19 @@
 			{
 				"command" : 1,
 				"file" : 0,
-				"line" : 76,
+				"line" : 82,
 				"parent" : 0
 			},
 			{
 				"command" : 2,
 				"file" : 0,
-				"line" : 49,
+				"line" : 54,
 				"parent" : 0
 			},
 			{
 				"command" : 3,
 				"file" : 0,
-				"line" : 44,
+				"line" : 48,
 				"parent" : 0
 			}
 		]
@@ -495,6 +495,11 @@
 			},
 			{
 				"backtrace" : 3,
+				"fragment" : "-l:librte_net_pcap.a",
+				"role" : "libraries"
+			},
+			{
+				"backtrace" : 3,
 				"fragment" : "-l:librte_net_pfe.a",
 				"role" : "libraries"
 			},
@@ -590,6 +595,11 @@
 			},
 			{
 				"backtrace" : 3,
+				"fragment" : "-l:librte_crypto_ccp.a",
+				"role" : "libraries"
+			},
+			{
+				"backtrace" : 3,
 				"fragment" : "-l:librte_crypto_cnxk.a",
 				"role" : "libraries"
 			},
@@ -626,6 +636,11 @@
 			{
 				"backtrace" : 3,
 				"fragment" : "-l:librte_crypto_octeontx.a",
+				"role" : "libraries"
+			},
+			{
+				"backtrace" : 3,
+				"fragment" : "-l:librte_crypto_openssl.a",
 				"role" : "libraries"
 			},
 			{
@@ -1070,6 +1085,16 @@
 			},
 			{
 				"backtrace" : 3,
+				"fragment" : "-lcrypto",
+				"role" : "libraries"
+			},
+			{
+				"backtrace" : 3,
+				"fragment" : "-ldl",
+				"role" : "libraries"
+			},
+			{
+				"backtrace" : 3,
 				"fragment" : "-lz",
 				"role" : "libraries"
 			},
@@ -1090,77 +1115,12 @@
 			},
 			{
 				"backtrace" : 3,
-				"fragment" : "-lbnxt_re-rdmav25",
-				"role" : "libraries"
-			},
-			{
-				"backtrace" : 3,
-				"fragment" : "-lcxgb4-rdmav25",
-				"role" : "libraries"
-			},
-			{
-				"backtrace" : 3,
-				"fragment" : "-lefa",
-				"role" : "libraries"
-			},
-			{
-				"backtrace" : 3,
-				"fragment" : "-lhns-rdmav25",
-				"role" : "libraries"
-			},
-			{
-				"backtrace" : 3,
-				"fragment" : "-li40iw-rdmav25",
-				"role" : "libraries"
-			},
-			{
-				"backtrace" : 3,
 				"fragment" : "-lmlx4",
 				"role" : "libraries"
 			},
 			{
 				"backtrace" : 3,
 				"fragment" : "-lmlx5",
-				"role" : "libraries"
-			},
-			{
-				"backtrace" : 3,
-				"fragment" : "-lmthca-rdmav25",
-				"role" : "libraries"
-			},
-			{
-				"backtrace" : 3,
-				"fragment" : "-locrdma-rdmav25",
-				"role" : "libraries"
-			},
-			{
-				"backtrace" : 3,
-				"fragment" : "-lqedr-rdmav25",
-				"role" : "libraries"
-			},
-			{
-				"backtrace" : 3,
-				"fragment" : "-lvmw_pvrdma-rdmav25",
-				"role" : "libraries"
-			},
-			{
-				"backtrace" : 3,
-				"fragment" : "-lhfi1verbs-rdmav25",
-				"role" : "libraries"
-			},
-			{
-				"backtrace" : 3,
-				"fragment" : "-lipathverbs-rdmav25",
-				"role" : "libraries"
-			},
-			{
-				"backtrace" : 3,
-				"fragment" : "-lrxe-rdmav25",
-				"role" : "libraries"
-			},
-			{
-				"backtrace" : 3,
-				"fragment" : "-lsiw-rdmav25",
 				"role" : "libraries"
 			},
 			{
@@ -1181,6 +1141,11 @@
 			{
 				"backtrace" : 3,
 				"fragment" : "-lnl-3",
+				"role" : "libraries"
+			},
+			{
+				"backtrace" : 3,
+				"fragment" : "-lpcap",
 				"role" : "libraries"
 			},
 			{
@@ -1485,7 +1450,27 @@
 			},
 			{
 				"backtrace" : 3,
+				"fragment" : "-lpcap",
+				"role" : "libraries"
+			},
+			{
+				"backtrace" : 3,
 				"fragment" : "-lmlx5",
+				"role" : "libraries"
+			},
+			{
+				"backtrace" : 3,
+				"fragment" : "-lpthread",
+				"role" : "libraries"
+			},
+			{
+				"backtrace" : 3,
+				"fragment" : "-lcrypto",
+				"role" : "libraries"
+			},
+			{
+				"backtrace" : 3,
+				"fragment" : "-ldl",
 				"role" : "libraries"
 			},
 			{
@@ -1500,67 +1485,7 @@
 			},
 			{
 				"backtrace" : 3,
-				"fragment" : "-lbnxt_re-rdmav25",
-				"role" : "libraries"
-			},
-			{
-				"backtrace" : 3,
-				"fragment" : "-lcxgb4-rdmav25",
-				"role" : "libraries"
-			},
-			{
-				"backtrace" : 3,
-				"fragment" : "-lefa",
-				"role" : "libraries"
-			},
-			{
-				"backtrace" : 3,
-				"fragment" : "-lhns-rdmav25",
-				"role" : "libraries"
-			},
-			{
-				"backtrace" : 3,
-				"fragment" : "-li40iw-rdmav25",
-				"role" : "libraries"
-			},
-			{
-				"backtrace" : 3,
-				"fragment" : "-lmthca-rdmav25",
-				"role" : "libraries"
-			},
-			{
-				"backtrace" : 3,
-				"fragment" : "-locrdma-rdmav25",
-				"role" : "libraries"
-			},
-			{
-				"backtrace" : 3,
-				"fragment" : "-lqedr-rdmav25",
-				"role" : "libraries"
-			},
-			{
-				"backtrace" : 3,
-				"fragment" : "-lvmw_pvrdma-rdmav25",
-				"role" : "libraries"
-			},
-			{
-				"backtrace" : 3,
-				"fragment" : "-lhfi1verbs-rdmav25",
-				"role" : "libraries"
-			},
-			{
-				"backtrace" : 3,
-				"fragment" : "-lipathverbs-rdmav25",
-				"role" : "libraries"
-			},
-			{
-				"backtrace" : 3,
-				"fragment" : "-lrxe-rdmav25",
-				"role" : "libraries"
-			},
-			{
-				"backtrace" : 3,
-				"fragment" : "-lsiw-rdmav25",
+				"fragment" : "-libverbs",
 				"role" : "libraries"
 			},
 			{
@@ -1861,11 +1786,6 @@
 			{
 				"backtrace" : 3,
 				"fragment" : "-lm",
-				"role" : "libraries"
-			},
-			{
-				"backtrace" : 3,
-				"fragment" : "-ldl",
 				"role" : "libraries"
 			},
 			{

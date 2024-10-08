@@ -7,7 +7,7 @@
 				{
 					"build" : ".",
 					"hasInstallRule" : true,
-					"jsonFile" : "directory-.-Debug-08738b7f1ac4e92a1c0b.json",
+					"jsonFile" : "directory-.-Debug-2b8b64a235d9cf26ed32.json",
 					"minimumCMakeVersion" : 
 					{
 						"string" : "3.10"
@@ -19,7 +19,8 @@
 						0,
 						1,
 						2,
-						3
+						3,
+						4
 					]
 				}
 			],
@@ -37,7 +38,8 @@
 						0,
 						1,
 						2,
-						3
+						3,
+						4
 					]
 				}
 			],
@@ -46,28 +48,35 @@
 				{
 					"directoryIndex" : 0,
 					"id" : "lab1-client-shared::@6890427a1f51a3e7e1df",
-					"jsonFile" : "target-lab1-client-shared-Debug-18b440d458794b85560b.json",
+					"jsonFile" : "target-lab1-client-shared-Debug-4c70b0aa3afee5b1f155.json",
 					"name" : "lab1-client-shared",
 					"projectIndex" : 0
 				},
 				{
 					"directoryIndex" : 0,
+					"id" : "lab1-client-static::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-lab1-client-static-Debug-fd49c4782c352c301596.json",
+					"name" : "lab1-client-static",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
 					"id" : "lab1-server-shared::@6890427a1f51a3e7e1df",
-					"jsonFile" : "target-lab1-server-shared-Debug-8616d0b3202e23110ced.json",
+					"jsonFile" : "target-lab1-server-shared-Debug-4ed2b027758211b27921.json",
 					"name" : "lab1-server-shared",
 					"projectIndex" : 0
 				},
 				{
 					"directoryIndex" : 0,
 					"id" : "lab1-server-static::@6890427a1f51a3e7e1df",
-					"jsonFile" : "target-lab1-server-static-Debug-fbf05356a21d8801728f.json",
+					"jsonFile" : "target-lab1-server-static-Debug-e3fe1b0a232c4b22cb61.json",
 					"name" : "lab1-server-static",
 					"projectIndex" : 0
 				},
 				{
 					"directoryIndex" : 0,
 					"id" : "static::@6890427a1f51a3e7e1df",
-					"jsonFile" : "target-static-Debug-1fea246d7dd0d44e90e8.json",
+					"jsonFile" : "target-static-Debug-ef51a99508927441e71d.json",
 					"name" : "static",
 					"projectIndex" : 0
 				}
@@ -77,8 +86,8 @@
 	"kind" : "codemodel",
 	"paths" : 
 	{
-		"build" : "/home/tianyi/Server/cmake-build-debug",
-		"source" : "/home/tianyi/Server"
+		"build" : "/mydata/Server/cmake-build-debug",
+		"source" : "/mydata/Server"
 	},
 	"version" : 
 	{
