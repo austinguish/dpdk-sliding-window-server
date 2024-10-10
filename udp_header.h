@@ -8,8 +8,8 @@
 struct udp_header_extra
 {
     struct rte_udp_hdr udp_hdr;
-    uint16_t window_size;
-    uint16_t seq;
+    uint64_t window_size;
+    uint64_t seq;
     uint64_t send_time;
 };
 #endif //UDP_HEADER_H

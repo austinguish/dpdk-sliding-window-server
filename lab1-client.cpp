@@ -1,287 +1,143 @@
-//
-// Created by jiangyw on 24-9-23.
-//
-/* SPDX-License-Identifier: BSD-3-Clause
- * Copyright(c) 2010-2015 Intel Corporation
- */
-
-#include "udp_header.h"
-#include <inttypes.h>
-#include <rte_common.h>
-#include <rte_cycles.h>
 #include <rte_eal.h>
 #include <rte_ethdev.h>
-#include <rte_ip.h>
-#include <rte_lcore.h>
 #include <rte_mbuf.h>
-#include <rte_udp.h>
-#include <stdint.h>
-#include <stdlib.h>
-#include <time.h>
-#include <arpa/inet.h>
-#include "flowstate.h"
-
-// predefine the flowstatetable here
-
-// #define PKT_TX_IPV4          (1ULL << 55)
-// #define PKT_TX_IP_CKSUM      (1ULL << 54)
-
+#include <rte_malloc.h>
+#include <rte_atomic.h>
+#include <rte_cycles.h>
+#include <unordered_map>
+#include <rte_spinlock.h>
+#include "udp_header.h"
+#include<atomic>
 #define RX_RING_SIZE 1024
 #define TX_RING_SIZE 1024
-
 #define NUM_MBUFS 8191
 #define MBUF_CACHE_SIZE 250
-#define BURST_SIZE 32
+#define BURST_SIZE 128
 #define MAX_FLOW_NUM 100
 #define PORT_NUM 5001
-
-uint32_t NUM_PING = 100;
-
-/* Define the mempool globally */
-struct rte_mempool* mbuf_pool = NULL;
-static struct rte_ether_addr my_eth;
-static size_t message_size = 1000;
-static uint32_t seconds = 1;
-
-size_t window_len = 1;
-size_t max_send = 100;
-
-int flow_size = 10000;
-int packet_len = 1000;
-int flow_num = 1;
-// preset flow_state_sender pointer arrays
-struct flow_state_sender* flow_table[MAX_FLOW_NUM];
-// uint16_t next_seq_num;  // last packet sent
-//    uint16_t effective_window;
-//    struct rte_mbuf *window_packets[WINDOW_SIZE];
-//    uint64_t send_times[WINDOW_SIZE];
-//    int last_acked; // acked packets
-//    // last written to the window
-//    uint16_t last_written; // last packet send to window
-
+#define RETRANSMISSION_TIMEOUT 10000000000  // 1 second in nanoseconds
 const rte_ether_addr dst = {{0x14, 0x58, 0xD0, 0x58, 0xdf, 0x43}};
 
-void init_flow_table()
+struct rte_mempool* mbuf_pool = NULL;
+static struct rte_ether_addr my_eth;
+uint64_t flow_size = 10000;
+int packet_len = 1000;
+int flow_num = 1;
+uint32_t NUM_PING = 100;
+std::atomic<int> active_flows;
+
+struct packet_info
 {
-    for (int i = 0; i < flow_num; i++)
-    {
-        flow_table[i] = (flow_state_sender*)malloc(sizeof(struct flow_state_sender));
-        struct flow_state_sender* sender = flow_table[i];
-        sender->next_seq_num = 1;
-        sender->effective_window = window_len;
-        sender->last_acked = 0;
-        sender->last_written = 0;
-        sender->advertised_window = WINDOW_SIZE;
-        // use std map to store the unacked packets
-        sender->unacked_packets = std::unordered_map<int, struct rte_mbuf*>();
-        sender->unacked_seq = std::queue<int>();
-        // save the pointer to the flow state table
-    }
+    uint64_t send_time;
+    bool acked;
+};
+
+// struct packet_time
+// {
+//     uint64_t send_time;
+//     uint64_t acked_time;
+// };
+
+struct flow_state
+{
+    uint64_t next_seq_num;
+    uint64_t last_acked;
+    std::unordered_map<uint64_t, packet_info> packets;
+    rte_spinlock_t lock;
+    uint64_t window_size;
+    // std::unordered_map<uint64_t, packet_time> packet_times;
+};
+
+struct flow_state* flow_table;
+
+static uint64_t get_current_time(void)
+{
+    return rte_get_timer_cycles() * 1000000000 / rte_get_timer_hz();
 }
 
-static uint64_t raw_time(void)
-{
-    struct timespec tstart = {0, 0};
-    clock_gettime(CLOCK_MONOTONIC, &tstart);
-    uint64_t t = (uint64_t)(tstart.tv_sec * 1.0e9 + tstart.tv_nsec);
-    return t;
-}
-
-static uint64_t time_now(uint64_t offset) { return raw_time() - offset; }
-
-uint32_t checksum(unsigned char* buf, uint32_t nbytes, uint32_t sum)
-{
-    unsigned int i;
-
-    /* Checksum all the pairs of bytes first. */
-    for (i = 0; i < (nbytes & ~1U); i += 2)
-    {
-        sum += (uint16_t)ntohs(*((uint16_t*)(buf + i)));
-        if (sum > 0xFFFF)
-            sum -= 0xFFFF;
-    }
-
-    if (i < nbytes)
-    {
-        sum += buf[i] << 8;
-        if (sum > 0xFFFF)
-            sum -= 0xFFFF;
-    }
-
-    return sum;
-}
-
-uint32_t wrapsum(uint32_t sum)
-{
-    sum = ~sum & 0xFFFF;
-    return htons(sum);
-}
-
-static void prepare_packet(rte_mbuf* pkt, const int flow_id, uint16_t seq_num)
+static void prepare_packet(struct rte_mbuf* pkt, int flow_id, uint64_t seq_num)
 {
     size_t header_size = 0;
     uint8_t* ptr = rte_pktmbuf_mtod(pkt, uint8_t*);
 
     // Ethernet header
-    rte_ether_hdr* eth_hdr = (rte_ether_hdr*)ptr;
+    struct rte_ether_hdr* eth_hdr = (struct rte_ether_hdr*)ptr;
     rte_ether_addr_copy(&my_eth, &eth_hdr->src_addr);
-    // Assuming dst is a global variable, you might need to pass it as a parameter
+    // Assuming dst is a global variable
     rte_ether_addr_copy(&dst, &eth_hdr->dst_addr);
     eth_hdr->ether_type = rte_cpu_to_be_16(RTE_ETHER_TYPE_IPV4);
     ptr += sizeof(*eth_hdr);
     header_size += sizeof(*eth_hdr);
 
     // IPv4 header
-    rte_ipv4_hdr* ipv4_hdr = (rte_ipv4_hdr*)ptr;
-    ipv4_hdr->version_ihl = 0x45;
-    ipv4_hdr->type_of_service = 0x0;
-    ipv4_hdr->total_length = rte_cpu_to_be_16(sizeof(rte_ipv4_hdr) +
-        sizeof(udp_header_extra) +
+    struct rte_ipv4_hdr* ip_hdr = (struct rte_ipv4_hdr*)ptr;
+    ip_hdr->version_ihl = 0x45;
+    ip_hdr->type_of_service = 0;
+    ip_hdr->total_length = rte_cpu_to_be_16(sizeof(struct rte_ipv4_hdr) +
+        sizeof(struct udp_header_extra) +
         packet_len);
-    ipv4_hdr->packet_id = rte_cpu_to_be_16(1);
-    ipv4_hdr->fragment_offset = 0;
-    ipv4_hdr->time_to_live = 64;
-    ipv4_hdr->next_proto_id = IPPROTO_UDP;
-    ipv4_hdr->src_addr = rte_cpu_to_be_32(0x0A000001); // 10.0.0.1
-    ipv4_hdr->dst_addr = rte_cpu_to_be_32(0x0A000002); // 10.0.0.2
-    ipv4_hdr->hdr_checksum = 0; // Will be filled by hardware
-    ptr += sizeof(*ipv4_hdr);
-    header_size += sizeof(*ipv4_hdr);
+    ip_hdr->packet_id = 0;
+    ip_hdr->fragment_offset = 0;
+    ip_hdr->time_to_live = 64;
+    ip_hdr->next_proto_id = IPPROTO_UDP;
+    ip_hdr->src_addr = rte_cpu_to_be_32(0x0A000001); // 10.0.0.1
+    ip_hdr->dst_addr = rte_cpu_to_be_32(0x0A000002); // 10.0.0.2
+    ip_hdr->hdr_checksum = 0; // Will be filled by hardware
+    ptr += sizeof(*ip_hdr);
+    header_size += sizeof(*ip_hdr);
 
-    // UDP header
-    udp_header_extra* udp_hdr_ext = (udp_header_extra*)ptr;
-    uint16_t srcp = PORT_NUM + flow_id;
-    uint16_t dstp = PORT_NUM + flow_id;
-    udp_hdr_ext->window_size = rte_cpu_to_be_16(flow_num);
-    udp_hdr_ext->udp_hdr.src_port = rte_cpu_to_be_16(srcp);
-    udp_hdr_ext->udp_hdr.dst_port = rte_cpu_to_be_16(dstp);
-    udp_hdr_ext->udp_hdr.dgram_len = rte_cpu_to_be_16(sizeof(udp_header_extra) + packet_len);
-    udp_hdr_ext->udp_hdr.dgram_cksum = 0; // Will be filled by hardware
-    udp_hdr_ext->seq = seq_num; // Add sequence number
-    ptr += sizeof(*udp_hdr_ext);
-    header_size += sizeof(*udp_hdr_ext);
+    // UDP header with extra fields
+    struct udp_header_extra* udp_hdr_extra = (struct udp_header_extra*)ptr;
+    udp_hdr_extra->udp_hdr.src_port = rte_cpu_to_be_16(PORT_NUM + flow_id);
+    udp_hdr_extra->udp_hdr.dst_port = rte_cpu_to_be_16(PORT_NUM + flow_id);
+    udp_hdr_extra->udp_hdr.dgram_len = rte_cpu_to_be_16(sizeof(struct udp_header_extra) + packet_len);
+    udp_hdr_extra->udp_hdr.dgram_cksum = 0; // Will be filled by hardware
+    udp_hdr_extra->window_size = flow_table[flow_id].window_size;
+    udp_hdr_extra->seq = seq_num;
+    udp_hdr_extra->send_time = get_current_time();
+    ptr += sizeof(*udp_hdr_extra);
+    header_size += sizeof(*udp_hdr_extra);
 
     // Payload
-    memset(ptr, 0, packet_len);
-    uint64_t timestamp = time_now(0);
-    memcpy(ptr, &timestamp, sizeof(timestamp));
+    memset(ptr, 'a', packet_len); // Fill payload with 'a'
 
     // Set packet attributes
-    pkt->nb_segs = 1;
-    pkt->pkt_len = header_size + packet_len;
-    pkt->data_len = pkt->pkt_len;
-    pkt->l2_len = RTE_ETHER_HDR_LEN;
+    pkt->data_len = header_size + packet_len;
+    pkt->pkt_len = pkt->data_len;
+    pkt->l2_len = sizeof(struct rte_ether_hdr);
     pkt->l3_len = sizeof(struct rte_ipv4_hdr);
     pkt->l4_len = sizeof(struct udp_header_extra);
-    // pkt->ol_flags = PKT_TX_IPV4 | PKT_TX_IP_CKSUM | PKT_TX_UDP_CKSUM;
 }
 
-
-static int parse_packet(struct sockaddr_in* src, struct sockaddr_in* dst,
-                        void** payload, size_t* payload_len,
-                        struct rte_mbuf* pkt, int* ack_num, uint16_t* advertised_window)
+static int parse_packet(struct rte_mbuf* pkt, uint64_t* ack_num, uint64_t* window_size)
 {
-    // packet layout order is (from outside -> in):
-    // ether_hdr
-    // ipv4_hdr
-    // udp_hdr
-    // client timestamp
-    uint8_t* p = rte_pktmbuf_mtod(pkt, uint8_t *);
-    size_t header = 0;
+    uint8_t* ptr = rte_pktmbuf_mtod(pkt, uint8_t*);
 
-    // check the ethernet header
-    struct rte_ether_hdr* const eth_hdr = (struct rte_ether_hdr*)(p);
-    p += sizeof(*eth_hdr);
-    header += sizeof(*eth_hdr);
-    uint16_t eth_type = ntohs(eth_hdr->ether_type);
-    struct rte_ether_addr mac_addr = {};
+    // Skip Ethernet header
+    ptr += sizeof(struct rte_ether_hdr);
 
-    rte_eth_macaddr_get(1, &mac_addr);
-    if (!rte_is_same_ether_addr(&mac_addr, &eth_hdr->dst_addr))
-    {
-        printf("Bad MAC: %02" PRIx8 " %02" PRIx8 " %02" PRIx8 " %02" PRIx8
-               " %02" PRIx8 " %02" PRIx8 "\n",
-               eth_hdr->dst_addr.addr_bytes[0], eth_hdr->dst_addr.addr_bytes[1],
-               eth_hdr->dst_addr.addr_bytes[2], eth_hdr->dst_addr.addr_bytes[3],
-               eth_hdr->dst_addr.addr_bytes[4], eth_hdr->dst_addr.addr_bytes[5]);
-        return -1;
-    }
-    if (RTE_ETHER_TYPE_IPV4 != eth_type)
-    {
-        printf("Bad ether type\n");
-        return -2;
-    }
+    // Skip IP header
+    ptr += sizeof(struct rte_ipv4_hdr);
 
-    // check the IP header
-    struct rte_ipv4_hdr* const ip_hdr = (struct rte_ipv4_hdr*)(p);
-    p += sizeof(*ip_hdr);
-    header += sizeof(*ip_hdr);
+    // Parse UDP header extra
+    struct udp_header_extra* udp_hdr_extra = (struct udp_header_extra*)ptr;
+    int flow_id = rte_be_to_cpu_16(udp_hdr_extra->udp_hdr.dst_port) - PORT_NUM;
+    *ack_num = udp_hdr_extra->seq;
+    *window_size = udp_hdr_extra->window_size;
 
-    // In network byte order.
-    in_addr_t ipv4_src_addr = ip_hdr->src_addr;
-    in_addr_t ipv4_dst_addr = ip_hdr->dst_addr;
-
-    if (IPPROTO_UDP != ip_hdr->next_proto_id)
-    {
-        printf("Bad next proto_id\n");
-        return -3;
-    }
-
-    src->sin_addr.s_addr = ipv4_src_addr;
-    dst->sin_addr.s_addr = ipv4_dst_addr;
-
-    // check udp header
-    struct udp_header_extra* const udp_hdr_ext = (struct udp_header_extra*)(p);
-    printf("Received packet with window size %u\n", udp_hdr_ext->window_size);
-    max_send = udp_hdr_ext->window_size;
-    // set
-    p += sizeof(*udp_hdr_ext);
-    header += sizeof(*udp_hdr_ext);
-
-    // In network byte order.
-    in_port_t udp_src_port = udp_hdr_ext->udp_hdr.src_port;
-    in_port_t udp_dst_port = udp_hdr_ext->udp_hdr.dst_port;
-    // set the ack number
-    *ack_num = udp_hdr_ext->seq;
-    *advertised_window = udp_hdr_ext->window_size;
-
-    int ret = rte_be_to_cpu_16(udp_hdr_ext->udp_hdr.dst_port) - PORT_NUM;
-    if (ret < 0 || ret >= MAX_FLOW_NUM)
-    {
-        printf("Bad port number %d\n",
-               rte_be_to_cpu_16(udp_hdr_ext->udp_hdr.dst_port));
-        return -4;
-    }
-
-    src->sin_port = udp_src_port;
-    dst->sin_port = udp_dst_port;
-
-    src->sin_family = AF_INET;
-    dst->sin_family = AF_INET;
-
-    *payload_len = pkt->pkt_len - header;
-    *payload = (void*)p;
-    return ret;
+    return flow_id;
 }
 
-/* basicfwd.c: Basic DPDK skeleton forwarding example. */
-
-/*
- * Initializes a given port using global settings and with the RX buffers
- * coming from the mbuf_pool passed as a parameter.
- */
-
-/* Main functional part of port initialization. 8< */
 static inline int port_init(uint16_t port, struct rte_mempool* mbuf_pool)
 {
     rte_eth_conf port_conf;
-    const uint16_t rx_rings = 1, tx_rings = 1;
+    const uint16_t rx_rings = 1, tx_rings = flow_num;
     uint16_t nb_rxd = RX_RING_SIZE;
     uint16_t nb_txd = TX_RING_SIZE;
     int retval;
     uint16_t q;
-    struct rte_eth_dev_info dev_info;
-    struct rte_eth_txconf txconf;
+    rte_eth_dev_info dev_info;
+    rte_eth_txconf txconf;
 
     if (!rte_eth_dev_is_valid_port(port))
         return -1;
@@ -291,8 +147,7 @@ static inline int port_init(uint16_t port, struct rte_mempool* mbuf_pool)
     retval = rte_eth_dev_info_get(port, &dev_info);
     if (retval != 0)
     {
-        printf("Error during getting device (port %u) info: %s\n", port,
-               strerror(-retval));
+        printf("Error during getting device (port %u) info: %s\n", port, strerror(-retval));
         return retval;
     }
 
@@ -308,29 +163,26 @@ static inline int port_init(uint16_t port, struct rte_mempool* mbuf_pool)
     if (retval != 0)
         return retval;
 
-    /* Allocate and set up 1 RX queue per Ethernet port. */
+    /* Allocate and set up RX queues */
     for (q = 0; q < rx_rings; q++)
     {
-        retval = rte_eth_rx_queue_setup(
-            port, q, nb_rxd, rte_eth_dev_socket_id(port), NULL, mbuf_pool);
+        retval = rte_eth_rx_queue_setup(port, q, nb_rxd, rte_eth_dev_socket_id(port), NULL, mbuf_pool);
         if (retval < 0)
             return retval;
     }
 
     txconf = dev_info.default_txconf;
     txconf.offloads = port_conf.txmode.offloads;
-    /* Allocate and set up 1 TX queue per Ethernet port. */
+    /* Allocate and set up TX queues */
     for (q = 0; q < tx_rings; q++)
     {
-        retval = rte_eth_tx_queue_setup(port, q, nb_txd,
-                                        rte_eth_dev_socket_id(port), &txconf);
+        retval = rte_eth_tx_queue_setup(port, q, nb_txd, rte_eth_dev_socket_id(port), &txconf);
         if (retval < 0)
             return retval;
     }
 
-    /* Starting Ethernet port. 8< */
+    /* Start the Ethernet port. */
     retval = rte_eth_dev_start(port);
-    /* >8 End of starting of ethernet port. */
     if (retval < 0)
         return retval;
 
@@ -339,203 +191,176 @@ static inline int port_init(uint16_t port, struct rte_mempool* mbuf_pool)
     if (retval != 0)
         return retval;
 
-    printf("Port %u MAC: %02" PRIx8 " %02" PRIx8 " %02" PRIx8 " %02" PRIx8
-           " %02" PRIx8 " %02" PRIx8 "\n",
+    printf("Port %u MAC: %02" PRIx8 " %02" PRIx8 " %02" PRIx8 " %02" PRIx8 " %02" PRIx8 " %02" PRIx8 "\n",
            port, RTE_ETHER_ADDR_BYTES(&my_eth));
 
     /* Enable RX in promiscuous mode for the Ethernet device. */
     retval = rte_eth_promiscuous_enable(port);
-    /* End of setting RX port in promiscuous mode. */
     if (retval != 0)
         return retval;
 
     return 0;
 }
 
-/* >8 End of main functional part of port initialization. */
-
-/* >8 End Basic forwarding application lcore. */
-static void send_packet(int flow_id)
+static void send_packet(int flow_id, uint64_t seq_num)
 {
-    flow_state_sender* state = flow_table[flow_id];
-    rte_mbuf* pkt;
-    int pkts_sent = 0;
-
-    // Calculate packets in flight
-    uint32_t packets_in_flight = state->next_seq_num - state->last_acked - 1;
-
-    // Calculate available window in packets
-    uint32_t available_window = state->advertised_window > packets_in_flight
-                                    ? state->advertised_window - packets_in_flight
-                                    : 0;
-
-    // Determine how many packets we can send
-    uint32_t packets_to_send = std::min(available_window,
-                                        (uint32_t)(NUM_PING - state->last_written));
-
-    while (packets_to_send > 0)
+    struct rte_mbuf* pkt = rte_pktmbuf_alloc(mbuf_pool);
+    if (pkt == NULL)
     {
-        pkt = rte_pktmbuf_alloc(mbuf_pool);
-        if (pkt == nullptr)
-        {
-            printf("Error allocating tx mbuf\n");
-            return;
-        }
-
-        prepare_packet(pkt, flow_id, state->next_seq_num);
-        pkts_sent = rte_eth_tx_burst(1, 0, &pkt, 1);
-        if (pkts_sent == 1)
-        {
-            state->unacked_packets[state->next_seq_num] = pkt;
-            state->unacked_seq.push(state->next_seq_num);
-            state->next_seq_num++;
-            state->last_written++;
-            packets_to_send--;
-        }
-        else
-        {
-            rte_pktmbuf_free(pkt);
-            break; // Stop if we couldn't send a packet
-        }
+        printf("Error allocating tx mbuf\n");
+        return;
     }
 
-    // state->last_send_time = rte_get_timer_cycles();
-    // send a packet to this flow
-    printf("send out a packet\n");
+    prepare_packet(pkt, flow_id, seq_num);
+
+    int sent = rte_eth_tx_burst(1, flow_id, &pkt, 1);
+    if (sent == 1)
+    {
+        rte_spinlock_lock(&flow_table[flow_id].lock);
+        flow_table[flow_id].packets[seq_num] = {get_current_time(), false};
+        // add the packet time
+        // flow_table[flow_id].packet_times[seq_num] = {get_current_time(), 0};
+        rte_spinlock_unlock(&flow_table[flow_id].lock);
+    }
+    else
+    {
+        rte_pktmbuf_free(pkt);
+    }
 }
 
-void receive_and_process_acks()
+static void check_and_retransmit(int flow_id)
 {
-    rte_mbuf* pkts[BURST_SIZE];
-    uint16_t nb_rx = rte_eth_rx_burst(1, 0, pkts, BURST_SIZE);
+    flow_state* state = &flow_table[flow_id];
+    uint64_t current_time = get_current_time();
 
-    for (uint16_t i = 0; i < nb_rx; i++)
+    rte_spinlock_lock(&state->lock);
+    for (auto& pair : state->packets)
     {
-        sockaddr_in src, dst;
-        void* payload = nullptr;
-        size_t payload_length = 0;
-        int ack_num = 0;
-        uint16_t advertised_window = 0;
-
-        int flow_id = parse_packet(&src, &dst, &payload, &payload_length, pkts[i], &ack_num, &advertised_window);
-        if (flow_id >= 0 && flow_id < MAX_FLOW_NUM)
+        uint64_t seq = pair.first;
+        packet_info& pinfo = pair.second;
+        if (!pinfo.acked && (current_time - pinfo.send_time) > RETRANSMISSION_TIMEOUT)
         {
-            flow_state_sender* state = flow_table[flow_id];
+            printf("Retransmitting packet %lu for flow %d\n", seq, flow_id);
+            rte_spinlock_unlock(&state->lock);
+            send_packet(flow_id, seq);
+            rte_spinlock_lock(&state->lock);
+        }
+    }
+    rte_spinlock_unlock(&state->lock);
+}
 
-            // Update the advertised window (in packets)
-            state->advertised_window = advertised_window;
+static int receive_thread(__attribute__((unused)) void* arg)
+{
+    struct rte_mbuf* pkts[BURST_SIZE];
+    uint64_t ack_num, received_window_size;
 
-            if (ack_num >= state->last_acked)
+    while (active_flows > 0)
+    {
+        const uint16_t nb_rx = rte_eth_rx_burst(1, 0, pkts, BURST_SIZE);
+
+
+        for (int i = 0; i < nb_rx; i++)
+        {
+            int flow_id = parse_packet(pkts[i], &ack_num, &received_window_size);
+
+
+            if (flow_id >= 0 && flow_id < flow_num)
             {
-                // Process ACK
-                if (ack_num > state->last_acked)
+                rte_spinlock_lock(&flow_table[flow_id].lock);
+                // set the acked time
+                // flow_table[flow_id].packet_times[ack_num].acked_time = get_current_time();
+                // update the acked flag
+                // if ack_num%100 == 0 print the acked_time - send_time and convert to ms
+                if (ack_num % 100 == 0)
                 {
-                    // New ACK received
-                    int acked_packets = ack_num - state->last_acked;
-                    state->in_flight_packets -= acked_packets;
-
-                    while (!state->unacked_seq.empty() && state->unacked_seq.front() <= ack_num)
-                    {
-                        int seq = state->unacked_seq.front();
-                        state->unacked_seq.pop();
-                        rte_pktmbuf_free(state->unacked_packets[seq]);
-                        state->unacked_packets.erase(seq);
-                    }
-                    state->last_acked = ack_num;
-                    // state->duplicate_acks = 0; // Reset duplicate ACK counter
-                    // } else {
-                    //     // Duplicate ACK received
-                    //     state->duplicate_acks++;
-                    //     if (state->duplicate_acks == 3) {
-                    //         // Fast retransmit
-                    //         // Retransmit the packet with sequence number last_acked + 1
-                    //         // This part needs to be implemented
-                    //     }
-                    // }
-
-                    // Update the effective window (in packets)
-                    state->effective_window = (state->advertised_window > state->in_flight_packets)
-                                                  ? (state->advertised_window - state->in_flight_packets)
-                                                  : 0;
+                    uint64_t send_time = flow_table[flow_id].packets[ack_num].send_time;
+                    uint64_t acked_time = get_current_time();
+                    printf("Flow %d: Packet %lu RTT = %.3f ms\n", flow_id, ack_num,
+                           (acked_time - send_time) / 1e6);
                 }
+
+                if (ack_num > flow_table[flow_id].last_acked)
+                {
+                    flow_table[flow_id].last_acked = ack_num;
+
+                    // 清理已确认的包
+                    for (auto it = flow_table[flow_id].packets.begin(); it != flow_table[flow_id].packets.end();)
+                    {
+                        if (it->first <= ack_num)
+                        {
+                            it = flow_table[flow_id].packets.erase(it);
+                        }
+                        else
+                        {
+                            ++it;
+                        }
+                    }
+                }
+
+                // 更新接收窗口大小
+                flow_table[flow_id].window_size = received_window_size;
+
+                rte_spinlock_unlock(&flow_table[flow_id].lock);
             }
+
             rte_pktmbuf_free(pkts[i]);
         }
     }
+
+    printf("Receive thread exiting\n");
+    return 0;
 }
 
-static void lcore_main()
+
+static int lcore_main(void* arg)
 {
-    struct rte_mbuf* pkts[BURST_SIZE];
-    struct rte_mbuf* pkt;
-    // char *buf_ptr;
-    struct rte_ether_hdr* eth_hdr;
-    struct rte_ipv4_hdr* ipv4_hdr;
-    struct rte_udp_hdr* udp_hdr;
+    int flow_id = *(int*)arg;
+    delete (int*)arg;
 
-    // Specify the dst mac address here:
-
-    struct sliding_hdr* sld_h_ack;
-    uint16_t nb_rx;
-    uint64_t reqs = 0;
-    // uint64_t cycle_wait = intersend_time * rte_get_timer_hz() / (1e9);
-
-    // TODO: add in scaffolding for timing/printing out quick statistics
-    printf("flow num is %d\n", flow_num);
-    int flow_id = 0;
-    while (true)
+    while (1)
     {
-        // Send packets for all flows
-        for (flow_id = 0; flow_id < flow_num; flow_id++)
-        {
-            send_packet(flow_id);
-        }
+        rte_spinlock_lock(&flow_table[flow_id].lock);
 
-        // Receive and process ACKs
-        receive_and_process_acks();
-
-        // Check if all flows are complete
-        bool all_complete = true;
-        for (flow_id = 0; flow_id < flow_num; flow_id++)
+        if (flow_table[flow_id].last_acked >= NUM_PING)
         {
-            if (flow_table[flow_id]->last_written < NUM_PING - 1 || !flow_table[flow_id]->unacked_packets.empty())
-            {
-                all_complete = false;
-                break;
-            }
-        }
-        if (all_complete)
-        {
+            rte_spinlock_unlock(&flow_table[flow_id].lock);
             break;
         }
+
+
+        while (flow_table[flow_id].next_seq_num <= flow_table[flow_id].last_acked + flow_table[flow_id].window_size &&
+            flow_table[flow_id].next_seq_num <= NUM_PING)
+        {
+            rte_spinlock_unlock(&flow_table[flow_id].lock);
+            send_packet(flow_id, flow_table[flow_id].next_seq_num);
+            rte_spinlock_lock(&flow_table[flow_id].lock);
+            flow_table[flow_id].next_seq_num++;
+        }
+
+        rte_spinlock_unlock(&flow_table[flow_id].lock);
+
+
+        check_and_retransmit(flow_id);
     }
+
+    printf("Flow %d completed\n", flow_id);
+    active_flows--;
+    return 0;
 }
-
-// while (flow_table[flow_id]->last_written < NUM_PING)
-// {
-//     send_packet(flow_id);
-//     printf("sent a packet!\n");
-//     /* now poll on receiving packets */
-//     receive(&nb_rx, pkts, flow_id);
-//
-//     flow_id = (flow_id + 1) % flow_num;
-// }
-// printf("Sent %" PRIu64 " packets.\n", reqs);
-
-/*
- * The main function, which does initialization and calls the per-lcore
- * functions.
- */
 
 int main(int argc, char* argv[])
 {
+    // Initialize EAL, parse arguments, set up port, etc.
+    // ...
     unsigned nb_ports;
     uint16_t portid;
 
+
     if (argc == 3)
     {
-        flow_num = (int)atoi(argv[1]);
-        flow_size = (int)atoi(argv[2]);
+        flow_num = std::stoull(argv[1]);
+
+        flow_size = std::stoull(argv[2]);
     }
     else
     {
@@ -544,47 +369,75 @@ int main(int argc, char* argv[])
     }
 
     NUM_PING = flow_size / packet_len;
-    // init the flow_state_table
-    init_flow_table();
-    /* Initializion the Environment Abstraction Layer (EAL). 8< */
+    printf("flow_num is %d, flow_size is %ld\n", flow_num, flow_size);
+    printf("NUM_PING is %d\n", NUM_PING);
+
     int ret = rte_eal_init(argc, argv);
     if (ret < 0)
         rte_exit(EXIT_FAILURE, "Error with EAL initialization\n");
-    /* >8 End of initialization the Environment Abstraction Layer (EAL). */
 
     argc -= ret;
     argv += ret;
 
     nb_ports = rte_eth_dev_count_avail();
-    printf("the number of nb_ports is %d", nb_ports);
-    /* Allocates mempool to hold the mbufs. 8< */
-    mbuf_pool = rte_pktmbuf_pool_create(
-        "MBUF_POOL", NUM_MBUFS * nb_ports, MBUF_CACHE_SIZE, 0,
-        RTE_MBUF_DEFAULT_BUF_SIZE, rte_socket_id());
-    /* >8 End of allocating mempool to hold mbuf. */
+    printf("the number of nb_ports is %d\n", nb_ports);
+
+    mbuf_pool = rte_pktmbuf_pool_create("MBUF_POOL", NUM_MBUFS * nb_ports * flow_num,
+                                        MBUF_CACHE_SIZE, 0, RTE_MBUF_DEFAULT_BUF_SIZE,
+                                        rte_socket_id());
 
     if (mbuf_pool == NULL)
         rte_exit(EXIT_FAILURE, "Cannot create mbuf pool\n");
 
-    /* Initializing all ports. 8< */
     RTE_ETH_FOREACH_DEV(portid)
         if (portid == 1 && port_init(portid, mbuf_pool) != 0)
             rte_exit(EXIT_FAILURE, "Cannot init port %" PRIu16 "\n", portid);
-    /* >8 End of initializing all ports. */
+    // if (initialize_flows(1, flow_num) != 0)
+    // {
+    //     rte_exit(EXIT_FAILURE, "Failed to initialize flows with server\n");
+    // }
+    // check how many queues on port 1 tx and rx
+    rte_eth_dev_info dev_info;
+    rte_eth_dev_info_get(1, &dev_info);
 
-    if (rte_lcore_count() > 1)
-        printf("\nWARNING: Too many lcores enabled. Only 1 used.\n");
+    printf("Port 1: RX queues = %u, TX queues = %u\n",
+           dev_info.nb_rx_queues,
+           dev_info.nb_tx_queues);
 
-    /* Call lcore_main on the main core only. Called on single lcore. 8< */
-    lcore_main();
-    /* >8 End of called on single lcore. */
-    printf("Done!\n");
-    /* clean up the EAL */
-    rte_eal_cleanup();
-    // clean the flow_state_table
+    // Initialize flow states
+    flow_table = new flow_state[flow_num];
     for (int i = 0; i < flow_num; i++)
     {
-        free(flow_table[i]);
+        flow_table[i].next_seq_num = 1;
+        flow_table[i].last_acked = 0;
+        rte_spinlock_init(&flow_table[i].lock);
     }
+
+    active_flows = flow_num;
+
+    // launch
+    for (int i = 0; i < flow_num; i++)
+    {
+        int* arg = new int(i);
+        int ret = rte_eal_remote_launch(lcore_main, arg, i + 1);
+        if (ret != 0)
+        {
+            printf("Error launching thread for flow %d\n", i);
+            delete arg;
+            active_flows--;
+        }
+    }
+
+    // Launch receiver thread
+    rte_eal_remote_launch(receive_thread, NULL, flow_num + 1);
+
+    // Wait for all threads to complete
+    rte_eal_mp_wait_lcore();
+    rte_eal_cleanup();
+
+
+    delete[] flow_table;
+
+
     return 0;
 }
