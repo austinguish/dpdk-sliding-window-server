@@ -6,5 +6,5 @@ CXX_DEFINES =
 
 CXX_INCLUDES = -I/usr/include/libnl3
 
-CXX_FLAGS =  -Og -DALLOW_EXPERIMENTAL_API -mssse3 -march=native -mtune=native -mssse3 -g -std=c++11 -fdiagnostics-color=always
+CXX_FLAGS =  -O3 -DALLOW_EXPERIMENTAL_API -mssse3 -march=native -mtune=native -mssse3 -g -std=c++11 -fdiagnostics-color=always
 

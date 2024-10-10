@@ -32,7 +32,7 @@ add_executable(${CLIENT_NAME}-static ${CLIENT_SOURCES}
         )
 
 # Set compile options
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Og -DALLOW_EXPERIMENTAL_API -mssse3")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O3 -DALLOW_EXPERIMENTAL_API -mssse3")
 
 # Enable SIMD instructions
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -march=native -mtune=native -mssse3")
